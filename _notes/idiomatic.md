@@ -1,0 +1,4 @@
+- The `import` declarations must follow the `package` declaration
+- By convention, we describe each package in a comment immediately preceding its package declaration
+    - For a `main` package, this comment is one or more complete sentences that describe the program as a while
+- Go does not permit unused local variables. Use the **blank identifier `_`** whenever syntax requires a variable name but program logic does not

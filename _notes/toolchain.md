@@ -1,0 +1,9 @@
+- The Go toolchain converts a source program and the things it depends on into instructions in the native machine language of a computer, through a single `go` command with a number of subcommands
+- `go run`
+    - Compiles the source code from one or more source file whose name end in `.go`
+    - Links it with libraries
+    - Runs the resulting executable file
+- `go fmt` applies `gofmt` to all the files in the specified package, or the ones in the current directory by default
+    - `gofmt` tool rewrites code into the standard format
+        - Sorts the package names into alphabetical order
+    - `goimports` manages the insertion and removal of import declarations as needed
