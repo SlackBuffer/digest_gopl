@@ -1,0 +1,3 @@
+- A channel is a **communication mechanism** that allows one goroutine to pass values of a specified type to another goroutine
+- `main` runs in a goroutine and the `go` statement creates additional goroutines
+- When one goroutine attempts a send or receive **on a channel**, it blocks until another goroutine attempts the corresponding receive or send operation, at which point the value is transferred and both goroutines proceed

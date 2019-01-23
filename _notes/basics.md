@@ -16,3 +16,6 @@
     var s = ""          // rarely used except when declaring multiple variables
     var s string = ""   // explicit about the variable's type, necessary when it is not the same as that of the initial value
     ```
+
+- `const`
+    - The value of a constant must be a number, string, or boolean

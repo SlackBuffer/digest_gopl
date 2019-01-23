@@ -2,3 +2,21 @@
 - Ex1.1, Ex1.2
     - Command-line arguments
     - `os.Args`, `strings.Join()`
+- Ex1.3
+    - Benchmark function
+- Ex1.4, Ex1.4.0
+    - `fmt.Fprintf`
+    - Operate input in streaming mode and file mode (read the entire input into memory in one big gulp)
+- Ex1.5, Ex1.6
+    - 二维弦振动
+    - `image`, `image/color`, `image/gif`
+    - `io.Writer` automatically outputs to stdout
+    - `rand.Seed()`
+- Ex1.7, Ex1.7.0, Ex1.8, Ex1.9
+    - `curl`
+    - `resp.Body.Close()`, `os.Exit(1)`
+    - `io.Copy(dst, src)`
+- Ex1.10.0, Ex1.10
+    - Concurrency, goroutines, channels
+    - String-slice convert
+    - `ioutil.WriteFile()`

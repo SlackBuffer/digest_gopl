@@ -1,0 +1,1 @@
+- Function and other package-level entities may be declared in any order

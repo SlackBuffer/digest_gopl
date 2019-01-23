@@ -1,0 +1,1 @@
+- The **order** of map iteration is random, varying from one run to another. This design is intentional, since it prevents programs from relying on any particular ordering where none is guaranteed
