@@ -32,3 +32,10 @@
 - `func Sprintf(format string, a ...interface{}) string`
     - Sprintf formats according to a format specifier
     - Returns the resulting string
+- `log.Fatal`
+	- `log.Fatal(http.ListenAndServe("localhost:8000", nil))`
+- `log.Print`
+    - `Print` calls Output to print to the standard logger
+    - Arguments are handled in the manner of `fmt.Print`
+- Output streams
+    - `os.Stdout`, `ioutil.Discard`, `http.ResponseWriter` (all 3 satisfy a common interface `io.Writer`, allowing any of them to be used wherever an output stream is needed)

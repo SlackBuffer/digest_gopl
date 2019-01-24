@@ -1,0 +1,2 @@
+- [ ] go run: cannot run non-main package
+- [x] curl and browser behave differently (Ex1.12.1): additional request '/favicon.ico'

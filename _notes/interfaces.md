@@ -1,0 +1,1 @@
+- Interfaces are **abstract types** that allow us to treat different concrete types in the same way based on what **methods** they have, not how they are represented or implemented

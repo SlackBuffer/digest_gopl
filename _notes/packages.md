@@ -1,0 +1,3 @@
+- Standard library packages: https://golang.org/pkg
+- Community packages: https://godoc.org
+- `go doc http.ListenAndServe`

@@ -16,7 +16,14 @@
     - `curl`
     - `resp.Body.Close()`, `os.Exit(1)`
     - `io.Copy(dst, src)`
-- Ex1.10.0, Ex1.10
+- Ex1.10.0, Ex1.10, Ex1.11
     - Concurrency, goroutines, channels
     - String-slice convert
     - `ioutil.WriteFile()`
+    - `nbytes, err := io.Copy(ioutil.Discard, resp.Body)`
+    - `strconv.Itoa(i)`
+- Ex1.12.0, Ex1.12.1, Ex1.12.2, Ex1.12
+    - `log.Fatal()`, `%q`
+    - `http.ResponseWriter`
+    - Concurrency with shared variables, `sync.Mutex`
+    - `strconv.Atoi`

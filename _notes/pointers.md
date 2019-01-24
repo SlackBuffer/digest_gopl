@@ -1,0 +1,2 @@
+- Pointers in Go are explicitly visible, but there's no pointer arithmetic
+- `&` yields the address of a variable; `*` retrieves the variable that the pointer refers to

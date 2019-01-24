@@ -1,0 +1,2 @@
+- Add a `&` to the end of of a command to run it in the background
+- `lsof -i:8000`, `kill -9 pid`
