@@ -1,0 +1,2 @@
+- Execution of the function begins with the first statement and continues until it encounters a `return` statement or reaches the end of a function that has no results. Control and any results are then returned to the caller
+- Function parameters and results are local variables; they are created each time their enclosing function is called

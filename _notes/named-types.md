@@ -1,2 +1,0 @@
-- A `type` declaration gives a name to an existing type
-- [ ] named-type

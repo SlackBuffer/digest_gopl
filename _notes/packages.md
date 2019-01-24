@@ -1,3 +1,12 @@
 - Standard library packages: https://golang.org/pkg
 - Community packages: https://godoc.org
 - `go doc http.ListenAndServe`
+- Packages in Go support modularity, encapsulation, separate compilation, and reuse
+- The source code for a package resides in one or more `.go` files, usually in a directory whose name ends with the import path
+    - The files of the `gopl.io/ch1/helloworld` package are stored in directory `$GOPATH/src/gopl.io/ch1/helloworld`
+- Each package serves as a separate name space for its declarations
+    - Within the `image` package, the identifier `Decode` refers to a different function than does the same identifier in the `unicode/utf16` package
+    - To refer a function from outside its package, we must qualify the identifier to make explicit whether we mean `image.Decode` or `utf16.Decode`
+- Packages let us hide information by controlling which names are visible outside the package, or exported
+- Exported identifiers start with an upper-case letter
+- Package names are always in lower case

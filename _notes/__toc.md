@@ -27,3 +27,6 @@
     - `http.ResponseWriter`
     - Concurrency with shared variables, `sync.Mutex`
     - `strconv.Atoi`
+# ch2
+- Ex2.0
+    - `flag` package
