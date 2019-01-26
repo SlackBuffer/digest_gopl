@@ -30,3 +30,14 @@
 # ch2
 - Ex2.0
     - `flag` package
+- Ex2.1
+    - Import a package
+- Ex2.2
+    - `bufio.NewScanner` accepts user input
+- Ex2.3
+    - `init()`
+    - Count set bits; `>>`
+    - [ ] benchmark
+- Ex2.4, Ex2.5
+    - `bits.Len64(x)`
+    - [ ] benchmark

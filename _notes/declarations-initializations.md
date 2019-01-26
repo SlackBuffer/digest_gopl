@@ -84,7 +84,7 @@
 
     - Many types declare a `String` method of this form because it controls how values of the type appear when printed as a string by the `fmt` package
 # Initialization
-- Package-level variables are initialized **before `main` begins**, and local variables are initialized as their declarations are encountered during function execution
+- Package-level variables are initialized **before `main` begins** (starts life with the value of its initializer expression, if any), and local variables are initialized as their declarations are encountered during function execution
 - A set of variables can be initialized by calling a function that returns multiple values
 
     ```go
@@ -92,6 +92,13 @@
     f, err := os.Open(name)
     ```
 
+## `init` function
+- Declaration
+    - `func init() { /* ... */}`
+- Any file may contain any number of `init` functions
+- Within each file, `init` functions are automatically executed when the program starts, in the order in which they are declared
+- `init` function cannot be called or referenced, but otherwise they are normal functions
+- Convenient to precompute a table of values
 ---
 - `const`
     - The value of a constant must be a number, string, or boolean

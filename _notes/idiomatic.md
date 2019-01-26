@@ -1,6 +1,9 @@
 - Conventions
     1. Describe each package in a comment immediately preceding its package declaration
         - For a `main` package, this comment is one or more complete sentences that describe the program as a while
+       - The doc comment immediately preceding the `package` declaration documents the package as a whole
+       - Only one file in each package should have a package doc comment
+       - Extensive doc comments are often placed in a file of their own, conventionally called `doc.go`
     2. Write a comment before the declaration of each function to specify its behavior
     - > These conventions are used by tools like `go doc` and `godoc` to locate and display documentation
     - Short names are preferred, especially for local variables

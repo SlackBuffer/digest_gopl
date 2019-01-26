@@ -1,6 +1,6 @@
 - Function and other package-level entities may be declared in any order
 - An entity declared within a function is local to that function
-- An entity declared outside of a function is visible in all files of the package to which it belongs (package-level entity)
+- An entity declared outside of a function is visible in all files of the package to which it belongs (package-level entity), as if the source code were all in a single file
 - A entity whose name begins with an upper-case letter (**exported**)is visible and accessible outside its own package and may be referred to by other parts of the program
 - The lifetime of a package-level variable is the entire execution of the program
 - A new instance of a local variable is created each time the declaration is executed, and lives on util it becomes unreachable, at which point its storage may be recycled
