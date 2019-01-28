@@ -1,11 +1,12 @@
 - Conventions
-    1. Describe each package in a comment immediately preceding its package declaration
-        - For a `main` package, this comment is one or more complete sentences that describe the program as a while
-       - The doc comment immediately preceding the `package` declaration documents the package as a whole
-       - Only one file in each package should have a package doc comment
-       - Extensive doc comments are often placed in a file of their own, conventionally called `doc.go`
-    2. Write a comment before the declaration of each function to specify its behavior
-    - > These conventions are used by tools like `go doc` and `godoc` to locate and display documentation
+    - Comments
+        1. Describe each package in a comment immediately preceding its package declaration
+            - For a `main` package, this comment is one or more complete sentences that describe the program as a while
+           - The doc comment immediately preceding the `package` declaration documents the package as a whole
+           - Only one file in each package should have a package doc comment
+           - Extensive doc comments are often placed in a file of their own, conventionally called `doc.go`
+        2. Write a comment before the declaration of each function to specify its behavior
+        - These conventions are used by tools like `go doc` and `godoc` to locate and display documentation
     - Short names are preferred, especially for local variables
         - The larger the scope of a name, the longer and more meaningful it should be
     - Use "camel case"
@@ -23,5 +24,24 @@
     err := r.ParseForm()
     if err != nil {
         log.Print(err)
+    }
+    ```
+
+- Deal with the error in the `if` block and then return, so that the successful execution path is not indented
+
+    ```go
+    // normal practice
+    f, err := os.Open(fname)
+    if err != nil {
+        return err
+    }
+    f.Stat()
+    f.Close()
+    // don't
+    if f, err := os.Open(name); err != nil {
+        return err
+    } else {
+        f.Stat()
+        f.Close()
     }
     ```

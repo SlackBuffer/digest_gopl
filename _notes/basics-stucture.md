@@ -43,3 +43,21 @@
     complex real imag
     panic recover
     ```
+
+- It's all bits at the bottom, but computers operate fundamentally on fixed-size number called **words**, which are interpreted as integers, floating-point numbers, bit sets, or memory address, then combine into larger aggregates
+- Go's **type** fall into four categories
+    1. basic types
+       1. numbers
+       2. strings
+       3. boolean
+    2. aggregate types
+       1. arrays
+       2. structs
+    3. reference
+       1. pointers
+       2. slices
+       3. maps
+       4. functions
+       5. channels
+    4. interface types
+- Reference types refer to program variables indirectly, so that the effect of an operation applied to one reference is observed by all copies of that reference
