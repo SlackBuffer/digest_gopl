@@ -41,3 +41,14 @@
 - Ex2.4, Ex2.5
     - `bits.Len64(x)`
     - [ ] benchmark
+# ch3
+- Bitwise
+- Ex3.1.0, Ex3.1
+    - `math.isInf`
+    - Handle infinite floating-point case
+- Ex3.2: pass for now
+- Ex3.3
+- Ex3.4
+    - [ ] handle url parameter (query string) no match
+    - [ ] https://golang.org/doc/code.html
+    - [ ] summary for Ex3.4

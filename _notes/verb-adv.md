@@ -20,3 +20,19 @@
     ```go
     fmt.Printf("%T", os.Args[:])
     ```
+
+- `%08b`: `08` (adverb) modifies `%b` to pad the result with zeros to exactly 8 digits
+- `[1]`, `#`
+
+    ```go
+    x := int64(0xdeadbeef)
+    fmt.Printf("%d %[1]x %#[1]x %#[1]X\n", x) // 3735928559 deadbeef 0xdeadbeef 0XDEADBEEF
+    ```
+
+    - Explicit argument indexes
+    - `#` emits prefix
+- Floating-point
+  1. `%g` prints floating-point values with the most compact representation that has adequate precision
+  2. `%e` (exponent)
+  3. `%f` (no exponent)
+  - All 3 verbs allow field width and numeric precision to be controlled
