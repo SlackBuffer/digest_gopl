@@ -78,4 +78,4 @@ func f(x, y float64) (float64, bool) {
 	return math.Sin(r) / r, true
 }
 
-// go run main.go
+// go run *.go

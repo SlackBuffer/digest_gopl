@@ -42,7 +42,7 @@
     - `bits.Len64(x)`
     - [ ] benchmark
 # ch3
-- Bitwise
+- Bitwise application
 - Ex3.1.0, Ex3.1
     - `math.isInf`
     - Handle infinite floating-point case
@@ -50,5 +50,4 @@
 - Ex3.3
 - Ex3.4
     - [ ] handle url parameter (query string) no match
-    - [ ] https://golang.org/doc/code.html
-    - [ ] summary for Ex3.4
+    - Content type for svg

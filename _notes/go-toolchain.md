@@ -2,7 +2,7 @@
 - `go help`
 - `go help [command]`, `go help [topics]`
 - `go run`
-    - Compiles the source code from one or more source file whose name end in `.go`
+    - Compiles the source code from one or more source file whose name end in `.go` (**only compiles files specified in the arguments**)
     - Links it with libraries
     - Runs the resulting executable file
 - `go fmt` applies `gofmt` to all the files in the specified package, or the ones in the current directory by default
