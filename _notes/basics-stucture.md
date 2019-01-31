@@ -2,6 +2,7 @@
 - A Go program is stored in one or more files whose names end in `.go`. Each file begins with a `package` declaration that says what package the file is a part of
 - The `import` declarations must follow the `package` declaration, followed by a sequence of package-level declarations of types, variables, constants, and functions, in any order
 # Basics
+- Go source files are always encoded in UTF-8 and Go text strings are conventionally interpreted as UTF-8
 - Doesn't require **semicolons** at the ends of statements or declarations
     - Except where 2 or more appear on the same line
     - Newlines following certain tokens are converted into semicolons

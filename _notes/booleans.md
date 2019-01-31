@@ -1,0 +1,1 @@
+- There's no implicit conversion from a boolean value to a numeric value like 0 or 1, or vice versa

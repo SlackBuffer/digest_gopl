@@ -22,6 +22,7 @@
     - The behavior of `%` for negative numbers varies across programming languages
     - In Go, the sign of the reminder is always the same as the sign of the **dividend** (被取余数)
 - If the result of an arithmetic operation, whether signed or unsigned, has more bits that can be represented in the result type, it's said to overflow. The high-order bits that do not fit are **silently discarded** (the sign may flip)
+- `&&` and `||` have short-circuit behavior: if the answer is already determined by the value of the left operand, the right operand is not evaluated
 ## Comparability
 - Two values of the same basic type (booleans, numbers, strings) may be compared using the `==` and `!=` operators
 - Integers, floating-numbers, and strings are **ordered** by comparison operators

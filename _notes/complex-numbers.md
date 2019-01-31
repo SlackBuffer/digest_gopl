@@ -1,0 +1,6 @@
+- Go provides 2 sizes of complex numbers, `complex64` and `complex128`, whose components are `float32` and `float64` respectively
+- The built-in function `complex` creates a complex number from its real and imaginary components. The built-in function `real`and `imag` functions extract those components
+- If a floating-point literal or decimal integer literal is immediately followed by `i`, it becomes an imaginary literal, denoting a complex number with zero real component
+- Under the rules for constant arithmetic, complex constants can be added to other constants (integer or floating point, real or imaginary)
+- Complex numbers may be compared for equality with `==` and `!=`. 2 complex numbers are equal if their real parts are equal and their imaginary parts are equal
+- `math/cmplx`

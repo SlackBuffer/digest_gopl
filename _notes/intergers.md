@@ -2,7 +2,7 @@
 - 4 sizes
    1. `int8`, `int16`, `int32`, `int64`
    2.`uint8`, `uint16`, `uint32`, `uint64`
-- `int` and `uint` are the natural or most efficient size for signed and unsigned integers on a particular platform (32 or 64 bits)
+- `int` and `uint` are the natural or most efficient size for signed and unsigned integers on a particular platform (32 or 64 ***bits***)
     - `int` is by far the most widely used numeric type
     - Different compilers may make different choices even on identical hardware
 - The type ***`rune`*** is a synonym for `int32` and conveniently indicates that a value is a **Unicode code point**. The 2 names may be used interchangeably

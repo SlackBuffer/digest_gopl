@@ -51,3 +51,4 @@
 - Ex3.4
     - [ ] handle url parameter (query string) no match
     - Content type for svg
+- Ex3.5; Skip Ex3.6-Ex3.9 for now
