@@ -62,3 +62,14 @@
        5. channels
     4. interface types
 - Reference types refer to program variables indirectly, so that the effect of an operation applied to one reference is observed by all copies of that reference
+## `range`
+
+```go
+n := 0
+for range "Hello, 世界" {
+    n++
+}
+```
+
+## Conversion
+- `[]rune(str)` `[]byte(str)`

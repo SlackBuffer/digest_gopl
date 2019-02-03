@@ -43,6 +43,7 @@
     - [ ] benchmark
 # ch3
 - Bitwise application
+    - Membership test
 - Ex3.1.0, Ex3.1
     - `math.isInf`
     - Handle infinite floating-point case
@@ -52,3 +53,6 @@
     - [ ] handle url parameter (query string) no match
     - Content type for svg
 - Ex3.5; Skip Ex3.6-Ex3.9 for now
+- Ex3.10, Ex3.11, Ex3.12
+    - `bytes.Buffer`
+    - `sort.Strings()`

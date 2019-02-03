@@ -32,7 +32,12 @@
     - Explicit argument indexes
     - `#` emits prefix
 - Floating-point
-  1. `%g` prints floating-point values with the most compact representation that has adequate precision
-  2. `%e` (exponent)
-  3. `%f` (no exponent)
-  - All 3 verbs allow field width and numeric precision to be controlled
+   1. `%g` prints floating-point values with the most compact representation that has adequate precision
+   2. `%e` (exponent)
+   3. `%f` (no exponent)
+    - All 3 verbs allow field width and numeric precision to be controlled
+- Space
+    1. put spaces between bytes printing strings or slices in hex (`% x`, `% X`)
+    <!-- 2. leave a space for elided sign in numbers (`% d`) -->
+- `%U`
+    - Unicode format
