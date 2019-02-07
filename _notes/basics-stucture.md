@@ -53,11 +53,15 @@
        3. boolean
     2. aggregate types
        1. arrays
+        - Elements all have the same type
        2. structs
+        - Aggregate types' values are concatenations of other values in memory
+        - Both arrays and structs are fixed size
     3. reference
-       1. pointers
-       2. slices
-       3. maps
+       1. slices
+       2. maps
+        - Slices and maps are dynamic data structures that grows as values are added
+       3. pointers
        4. functions
        5. channels
     4. interface types

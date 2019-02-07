@@ -58,3 +58,10 @@
     - `sort.Strings()`
 - Ex3.13
     - `iota`
+# ch4
+- Ex4.1
+    - `^`
+- Ex4.2
+    - `flag` package, `crypto/sha512` package
+    - `switch`
+    - `bufio.NewScanner(os.Stdin)`
