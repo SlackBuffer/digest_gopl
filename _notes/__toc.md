@@ -56,3 +56,5 @@
 - Ex3.10, Ex3.11, Ex3.12
     - `bytes.Buffer`
     - `sort.Strings()`
+- Ex3.13
+    - `iota`
