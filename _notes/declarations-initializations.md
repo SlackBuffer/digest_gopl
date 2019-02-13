@@ -7,7 +7,7 @@
     - Only used within a function, to declare and initialize local variable
     - `:=` is a declaration; `=` is assignment
     - A short variable declaration does not necessarily declare all the variables on its left-hand side
-        - If some of them were already declared in **the same lexical block**, then, for those variables, the short variable declarations act like an **assignment** to those variables
+        - If some of them were already declared in ***the same lexical block***, then, for those variables, the short variable declarations act like an **assignment** to those variables
             - Declarations in an outer block are ignored
     - A short variable declaration must declare **at least one new variable**
     - Short variable declarations with multiple initializer expressions should be used only when they help readability, such as for short and natural groupings like the initialization part of a `for` loop

@@ -87,7 +87,7 @@
     - byte to rune
 - Ex4.7
     - `utf8.DecodeRune`
-    - [ ] definition of "do it without allocating new memory"; suspend for now
+    - Reverse twice for non-ASCII characters
 - Dedup
     - Map simulates a **set of strings**
 - Charcount

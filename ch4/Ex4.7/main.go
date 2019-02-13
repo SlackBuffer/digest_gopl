@@ -5,28 +5,22 @@ import (
 	"unicode/utf8"
 )
 
-func rotate(s []byte, i int) []byte {
-	a := make([]byte, len(s))
-	copy(a, s[i:])
-	copy(a[len(s)-i:], s[:i])
-	return a
-}
-
 func reverse(s []byte) {
-	runeCount := 0
-	for len(s) > 0 {
-		_, size := utf8.DecodeRune(s)
-		s = s[size:]
-		runeCount++
-	}
-
-	for i := 0; i < runeCount/2; i++ {
-
+	for i, j := 0, len(s)-1; i < j; i, j = i+1, j-1 {
+		s[i], s[j] = s[j], s[i]
 	}
 }
 
 func main() {
-	a := []byte("hello 世界")
-	reverse(a)
-	fmt.Println(a)
+	s := []byte("你好 hello  世界")
+	sz := 0
+	for len(s[sz:]) > 0 {
+		_, size := utf8.DecodeRune(s[sz:])
+		if size > 1 {
+			reverse(s[sz : sz+size])
+		}
+		sz += size
+	}
+	reverse(s)
+	fmt.Println(string(s))
 }
