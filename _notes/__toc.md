@@ -44,6 +44,10 @@
 # ch3
 - Bitwise application
     - Membership test
+- String utils
+- Netflag
+    - `iota`
+    - Bitwise operations
 - Ex3.1.0, Ex3.1
     - `math.isInf`
     - Handle infinite floating-point case
@@ -65,3 +69,22 @@
     - `flag` package, `crypto/sha512` package
     - `switch`
     - `bufio.NewScanner(os.Stdin)`
+- Reverse-rotate
+- Append
+    - `copy`
+    - `...` in function parameters
+- Nonempty
+    - Slices sharing the same underlying array
+- Remove
+    - `copy` usage
+- Ex4.3
+    - Array pointer
+- Ex4.4
+    - `copy` usage
+- Ex4.5
+- Ex4.6
+    - `unicode.IsSpace`
+    - byte to rune
+- Ex4.7
+    - `utf8.DecodeRune`
+    - [ ] definition of "do it without allocating new memory"; suspend for now

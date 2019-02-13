@@ -26,6 +26,7 @@
 ## Comparability
 - Two values of the same basic type (booleans, numbers, strings) may be compared using the `==` and `!=` operators
 - Integers, floating-numbers, and strings are **ordered** by comparison operators
+- For reference types like pointers and channels, the `==` operators tests reference identity, that is, whether the two entities refer to the same thing
 ## Bitwise binary operators
 
 ```go
