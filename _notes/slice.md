@@ -30,6 +30,8 @@
 - The elements of a slice are indirect, making it possible for slice to contain itself
 - A fixed slice value may contain different elements at different times as the contents of the underlying array are modified
 - A hash table such as Go's map type makes only shallow copies of its keys, it requires that equality for each key remain the same throughout the lifetime of the hash table
+
+
 - The zero value of a slice type is `nil`
 - A nil slice has no underlying array. The nil slice has length and capacity zero
 - There're also non-nil slices of length and capacity zero (***`[]int{}`***, `make([]int, 3)[3:]`)

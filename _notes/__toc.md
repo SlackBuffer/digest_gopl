@@ -88,3 +88,15 @@
 - Ex4.7
     - `utf8.DecodeRune`
     - [ ] definition of "do it without allocating new memory"; suspend for now
+- Dedup
+    - Map simulates a **set of strings**
+- Charcount
+    - `ReadRune`
+    - `EOF`
+- Graph
+    - Idiomatic way to populate a map lazily
+    - The value type being a composite type
+- Ex4.8
+- Ex4.9
+    - File as `Scanner` input
+	- `input.Split(bufio.ScanWords)`
