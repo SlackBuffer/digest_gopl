@@ -100,3 +100,4 @@
 - Ex4.9
     - File as `Scanner` input
 	- `input.Split(bufio.ScanWords)`
+- Treesort
