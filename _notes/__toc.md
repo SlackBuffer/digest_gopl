@@ -101,3 +101,17 @@
     - File as `Scanner` input
 	- `input.Split(bufio.ScanWords)`
 - Treesort
+- Github
+    - `json.Decoder`
+    - `http.Get`
+- Issues
+- Ex4.10
+    - `time`, `Add`, `After`, `Format`
+- [ ] Ex4.11
+    - Invoking preferred text editor
+- [ ] Ex4.12
+    - Crawler
+    - https://xkcd.com/about/
+- [ ] Ex4.13
+    - Crawler
+    - Download images

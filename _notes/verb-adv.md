@@ -41,3 +41,5 @@
     <!-- 2. leave a space for elided sign in numbers (`% d`) -->
 - `%U`
     - Unicode format
+- `-`: 字段左对齐
+- `width.precision`
