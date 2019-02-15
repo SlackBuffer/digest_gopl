@@ -107,3 +107,82 @@
 
     - `&Point{1, 2}` can be used directly **within an expression**, such as a function call
 ## Comparing structs
+- If all the fields of a struct are comparable, the struct itself is comparable
+- The `==` operation compares the corresponding fields of the 2 struct in order
+- Comparable struct types may be used as the key of a map
+
+    ```go
+    type address struct {
+        hostname string
+        port     int
+    }
+    hits := make(map[address]int)
+    hits[address{"golang.org", 443}]++
+    ```
+
+## Struct embedding and anonymous fields
+- Go's struct embedding mechanism lets us use one named struct type as an anonymous field of another struct type, providing a syntactic shortcut so that a simple dot expression like `x.f` can stand for a chain of fields like `x.d.e.f`
+- Factor out common parts of different structs
+
+    ```go
+    type Point struct {
+        X, Y int
+    }
+    type Circle struct {
+        Center Point
+        Radius int
+    }
+    type Wheel struct {
+        Circle Circle
+        Spokes int
+    }
+    var w Wheel
+    w.Circle.Center.X = 1
+    ```
+
+    - Accessing the fields of a `Wheel` is verbose
+- An anonymous field has a type but no name. The type of the field must be a named type or a pointer to a named type
+
+    ```go
+    type Point struct {
+        X, Y int
+    }
+    type Circle struct { // Point is embedded within Circle
+        Point // anonymous field
+        Radius int
+    }
+    type Wheel struct {  // Circle is embedded within Wheel
+        Circle  // anonymous field
+        Spokes int
+    }
+    var w Wheel
+    w.X = 1 // w.Circle.Point.X = 1
+    w.Radius = 1 // w.Circle.Radius = 1
+    ```
+
+    - Embedding allows us to refer to the names at the leaves of the implicit tree without giving the intervening name
+    - We may omit **any or all** of the anonymous fields when selecting their subfields
+    - The explicit form is still valid, meaning that the **anonymous** fields `Circle` and `Point` do have implicit names (implicitly determined by the named type), but those names are optional in dot expressions
+- There's no corresponding shorthand for the struct literal syntax
+- The struct literal must follow the shape of the type declarations
+
+    ```go
+    w = Wheel{Circle{Point{8, 8}, 5}, 20}
+
+    // trailing comma necessary here
+    w = Wheel{
+        Circle: Circle {
+            Point: Point{X: 8, Y: 8},
+            Radius: 5,
+        },
+        Spokes: 20,
+    }
+    ```
+
+- Because anonymous fields do have implicit names, you can't have two anonymous fields of the same type since their names would conflict
+- Because the name of the field is implicitly determined by its type, so too is the visibility of the field
+    - Had `Point` and `Circle` been unexported, we could still use the shorthand form `w.X = 1`, but the explicit long form `w.circle.point.X` would be forbidden outside the declaring package because `circle` and `point` would be inaccessible
+- The shorthand notation used for selecting the fields of an embedded type works for selecting its methods as well
+- The outer struct type gains not just the fields of the embedded type but its methods too
+- This mechanism is the main way complex object behaviors are composed from simpler ones
+    - Composition is central to object-oriented programming in Go
