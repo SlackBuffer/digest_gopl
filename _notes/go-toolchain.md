@@ -11,3 +11,4 @@
     - `goimports` manages the insertion and removal of import declarations as needed
 - `go doc`
     - `go doc http.ListenAndServe`
+    - `go doc html/template`
