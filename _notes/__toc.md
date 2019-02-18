@@ -130,3 +130,10 @@
 - Ex5.2
 - Ex5.3
 - Ex5.4
+- Findlinks2
+    - `fmt.Errorf`
+    - > The HTML parser can usually recover from bad input and construct a document containing error nodes, so `Parse` rarely fails; when it does, it's typically due to underlying I/O errors
+    - > Ensure that `resp.Body` is closed so that network resources are properly released even in case of error
+- Ex5.5
+    - **`strings.NewReader`**
+- Ex5.6

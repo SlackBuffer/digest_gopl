@@ -77,3 +77,5 @@ for range "Hello, 世界" {
 
 ## Conversion
 - `[]rune(str)` `[]byte(str)`
+## GC
+- Go's garbage collector recycles unused memory, but do not assume it will release unused operating system resources like open files and network connections. They should be closed explicitly
