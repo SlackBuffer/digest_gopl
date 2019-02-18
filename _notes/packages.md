@@ -1,6 +1,8 @@
 # Packages
 - Standard library packages: https://golang.org/pkg
 - Community packages: https://godoc.org
+- The `golang.org/x/...` repositories hold packages designed and maintained by the Go team
+    - The packages are not in the standard library because they're still under development or because they're rarely needed by the majority of Go programmers
 - `go doc http.ListenAndServe`
 - Packages in Go support modularity, encapsulation, separate compilation, and reuse
 - The source code for a package resides in one or more `.go` files, usually in a directory whose name ends with the import path

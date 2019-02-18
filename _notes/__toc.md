@@ -118,3 +118,15 @@
 - Issueshtml
     - HTML escape
 - [ ] Ex4.14
+# ch5
+- Findlinks
+    - `html.Parse`
+    - `go build`
+    - `|` pipe
+- Outline
+    - Pass slice as value
+- Ex5.1
+    - Recursion
+- Ex5.2
+- Ex5.3
+- Ex5.4
