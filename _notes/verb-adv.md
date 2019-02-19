@@ -43,3 +43,5 @@
     - Unicode format
 - `-`: 字段左对齐
 - `width.precision`
+- `%*s` - `fmt.Printf("%*s<%s>\n", depth*2, "", n.Data)`
+    - Prints a string padded with a variable number of spaces. The width and the string are provided by the arguments `depth*2` and `""`

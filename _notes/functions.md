@@ -87,3 +87,166 @@
 - Go programs use ordinary control-flow mechanisms like `if` and `return` to respond to errors
     - This style demands that more attention be paid to error-handling logic, but this is precisely the point
 ## Error-handling strategies
+- When a function call returns an error, it's the caller's responsibility to check it and take appropriate action
+- After checking an error, failure is usually dealt with **before success**
+- If failure causes the function to return, the logic for success is not indented with `else` block but follows at the outer level
+- Functions tend to exhibit a common structure, with a series of initial checks to reject errors, followed by the substance of the function at the end, **minimally indented**
+### 1. Propagate the error
+- The most common is to propagate the error, so that a failure in a subroutine becomes a failure of the calling routine
+- `fmt.Errorf` formats an error message using `fmt.Sprintf` and returns a new `error` value
+    - It's used to build descriptive errors by **successively prefixing** additional context information to the original error message
+
+    ```go
+    doc, err := html.Parse(resp.Body)
+    resp.Body.Close()
+    if err != nil {
+        return nil, fmt.Errorf("parsing %s as HTML: %v", url, err)
+    }
+
+    resp, err := http.Get(url) 
+    if err != nil {
+        return nil, err
+    }
+    ```
+
+- When the error is handled by the program's `main` function, it should provide a clear causal chain from the root problem to the overall failure
+    - `genesis: crashed: no parachute: G-switch failed: bad relay orientation`
+- Because error messages are frequently chained together, message strings should not be capitalized and **newlines should be avoided**
+    - The resulting errors may be long, but they'll be self-contained when found by tools like `grep`
+- When designing error messages, be deliberate, so that each one is a meaningful description of the problem with sufficient and relevant detail, and be consistent, so that errors returned by the same function or by a group of functions in the same packages are similar in form and can be dealt with in the same way
+    - The `os` package guarantees that every error returned by a file operation describes not just the nature of the failure (permission denied, no such directories, and so on) but also the name of the file, so the caller needn't include this information in the error message it constructs
+- In general, the call `f(x)` is responsible for reporting the attempted operation `f` and the argument value `x` as they relate to the context of the error. The caller is responsible for adding further information that it has but the call `f(x)` does not
+### 2. Retry
+- For errors that represent transient or unpredictable problems, it may make sense to retry the failed operation, possibly with a delay between tries, and perhaps with a limit on the number of attempts or the time spent trying before giving up entirely
+### 3. Print the error and stop the program
+- If progress is impossible, the caller can print the error and stop the program gracefully
+- This course of action should generally be reserved for the **main package** of a program
+    - Library functions should usually propagate errors to the caller, unless the error is a sign of an internal inconsistency - that is, a bug
+
+    ```go
+    // in function main
+    if err := WaitForSever(url); err != nil {
+        fmt.Fprintf(os.Stderr, "Site is down: %v\n", err)
+        os.Exit(1)
+    }
+    ```
+
+- A more convenient way to achieve the same effect is to call `log.Fatalf`. As with all the `log` functions, by default it prefixes the time and date to the error message
+
+    ```go
+    if err := WaitForServer(url); err != nil {
+        log.Fatalf("Site is down: %v\n", err)
+    }
+    ```
+
+    - For a more attractive output, we can set the prefix used by the `log` package to the name of the command, and suppress the display of display of the date and time
+
+        ```go
+        log.SetPrefix("wait: ")
+        log.SetFlags(0)
+        ```
+
+### 4. Log and continue
+- In some cases, it's sufficient just to log the error and then continue
+
+    ```go
+    if err := Ping(); err != nil {
+        log.Printf("ping failed: %v; networking disabled", err)    
+    }
+
+    if err := Ping(); err != nil {
+        fmt.Fprintf(os.Stderr, "ping failed: %v; networking disabled\n", err)
+    }
+    ```
+
+    - All `log` functions append a newline if one is not already present
+### 5.Ignore
+- In rare cases we can safely ignore an error entirely
+
+    ```go
+    dir, err := ioutil.TempDir("", "scratch")
+    if err != nil {
+        return fmt.Errorf("failed to create temp dir: %v", err)
+    }
+    // ...use temp dir...
+    os.RemoveAll(dir) // ignore errors; $TMPDIR is cleaned periodically
+    ```
+
+    - The call to `os.RemoveAll` may fail, but the program ignores it because the operating system periodically cleans out the temporary directory
+    - In this case, discarding the error was intentional, but the program logic would be the same had we forget to deal with it
+- Get into the habit of considering errors after every call, and when you deliberately ignore one, document your intent clearly
+## End Of File (EOF)
+- On occasion, a program must take different actions depending on the kind of error that has occurred
+- Consider an attempt to read `n` bytes of data from a file
+    1. If `n` is chosen to be the length of the file, any error represents a failure
+    2. If the caller repeatedly tries to read fixed-size chunks until the file is exhausted, the caller must respond differently to an end-of-file condition that it does to all other errors
+- The `io` package guarantees that any read failure caused by an end-of-file condition is always reported by a distinguished error, `io.EOF`
+
+    ```go
+    package io
+    import "errors"
+    // EOF is the error returned by Read when no more input is available
+    var EOF = errors.New("EOF")
+    ```
+
+- The caller can detect this condition using a simple comparison
+
+    ```go
+    in := bufio.NewReader(os.Stdin)
+    for {
+        r, _, err := in.ReadRune()
+        if err == io.EOF {
+            break // finished reading
+        }
+        if err != nil {
+            return fmt.Errorf("read failed: %v", err)
+        }
+        // ...use r...
+    }
+    ```
+
+- Since in an end-of-file condition there's no information to report besides the fact of it, `io.EOF` has a fixed error message, "EOF"
+    - For other errors, we may need to report both the quantity and quantity of the error, so to speak, so a fixed error value will not do
+# Function values
+- Functions are first-class values in Go: like other values, function values have **types**, and they may be assigned to variables or passed to or returned from functions
+- A function value may be called like any other function
+
+    ```go
+    func square(n int) int { return n * n }
+    func negative(n int) int { return -n }
+    func product(m, n int) int { return m * n }
+
+    f := square
+    fmt.Println(f(3)) // "9"
+    f = negative
+    fmt.Printf("%T\n", f) // "func(int) int"
+    f = product // compile error: can't assign func(int, int) int to func(int) int
+    ```
+
+- The zero value of a function type is `nil`
+- Calling a nil function value causes a panic
+
+    ```go
+    var f func(int) int
+    f(3) // panic: call of nil function
+    ```
+
+- Function values may be compared with `nil`
+
+    ```go
+    var f func(int) int
+    if f != nil {
+        f(3)
+    }
+    ```
+
+- Function values are not comparable, so they may not be compared against each other or used as keys in a map
+- Function values let us parameterize our functions over not just data, but **behavior** too
+    - `strings.Map` applies a function to each character of a string, joining the results to make another string
+
+        ```go
+        func add1(r rune) rune { return r + 1 }
+        fmt.Println(strings.Map(add1, "HAL-9000")) // IBM.:111
+        fmt.Println(strings.Map(add1, "VMS")) // "WNT"
+        fmt.Println(strings.Map(add1, "Admin")) // "Benjy"
+        ```

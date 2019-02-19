@@ -137,3 +137,15 @@
 - Ex5.5
     - **`strings.NewReader`**
 - Ex5.6
+- Wait
+    - Exponential back-off
+    - Retry failed operation
+- Outline2
+    - `%*s` print trick
+- Ex5.7
+    - HTML pretty-printer
+    - [ ] optimize text node
+- Ex5.8
+    - ElementByID
+- Ex5.9
+    - `strings.Replace()`
