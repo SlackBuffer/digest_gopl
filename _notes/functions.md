@@ -250,3 +250,40 @@
         fmt.Println(strings.Map(add1, "VMS")) // "WNT"
         fmt.Println(strings.Map(add1, "Admin")) // "Benjy"
         ```
+    
+# Anonymous functions
+- Named functions can be declared only at package level
+- A function literal can be used to denote a function value within any expression
+- A function literal is written like a function declaration, but without a name following the `func` keyword
+- A function literal is an expression, and its **value** is called an anonymous function
+- Function literals let us define a function at its point of use
+
+    ```go
+    strings.Map(func(r rune) rune { return r + 1 }, "HAL-9000")
+    ```
+
+- Functions defined in this way has access to **the entire lexical environment**, so the inner function can refer to variables from the enclosing function
+- Function values can have state (closures)
+- The anonymous inner function can access and update the local variables the local variables of the enclosing function
+- These **hidden variable references** are why we classify functions as **reference types** and why function values are not **comparable**
+- When an anonymous function requires recursion, we must first declare a variable, and then assign the anonymous function to that variable
+    - Had these 2 steps been combined in the declaration, the function literal would not be within the scope of the variable (`visitAll`) (`:=` 类型推断) so it would have no way to call itself recursively
+
+    ```go
+    var visitAll func(items []string)
+	visitAll = func(items []string) {
+        // ...
+        visitAll(m[item])
+        // ...
+    }
+    
+    visitAll := func(item []string) {
+        // ...
+        visitAll(m[item]) // compile error: undefined: visitAll
+        // ...
+    }
+    ```
+
+- Crawling the web is a problem of graph traversal
+- DFS, BFS
+    - https://www.youtube.com/watch?v=bIA8HEEUxZI

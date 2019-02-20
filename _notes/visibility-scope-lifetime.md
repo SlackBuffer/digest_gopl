@@ -79,3 +79,4 @@
 
     - `x` here must be heap-allocated because it's still reachable from `global` after `f` (function context exists on the stack) has returned, despite being declared as a local variable; we say `x` escapes from `f`
     - When `g` returns, the variable `*y` becomes unreachable and can be recycled. Since `*y` does not escape from `g`, it's safe for the compiler to allocate `*y` on the stack, even though it was allocated with `new`
+- In closure cases, the lifetime of a variable is not determined by its scope

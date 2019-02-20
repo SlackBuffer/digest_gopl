@@ -149,3 +149,7 @@
     - ElementByID
 - Ex5.9
     - `strings.Replace()`
+- Toposort
+    - Topological sorting
+    - Directed graph
+    - Depth-first search
