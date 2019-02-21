@@ -159,3 +159,11 @@
 - Findlinks3
     - Breadth-first traversal
     - `append(slice, slice...)`
+- [ ] Ex5.10, Ex5.11
+- Ex5.12
+- [ ] Ex5.13, Ex5.14
+    - Later
+- Ex5.15
+    - `errors.New`
+- Ex5.16
+- Ex5.17

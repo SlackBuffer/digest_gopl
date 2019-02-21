@@ -287,3 +287,65 @@
 - Crawling the web is a problem of graph traversal
 - DFS, BFS
     - https://www.youtube.com/watch?v=bIA8HEEUxZI
+## Caveat: capturing iteration variables
+- Consequence of the **scope rules for loop variables**
+
+    ```go
+    var rmdirs []func()
+    for _, d := range tempDirs() {
+        dir := d // necessary!
+
+        os.MkdirAll(dir, 0755) // this creates necessary parent directories too
+        rmdirs = append(rmdirs, func() {
+            os.RemoveAll(dir)
+        })
+    }
+    for _, rmdirs := range rmdirs {
+        rmdir() //clean up
+    }
+    ```
+
+    - The `for` loop introduces a new lexical block in which the variable `d` is declared
+    - Without `dir := d`, all function values created by this loop "capture"" and share the same variable `d` - an **addressable storage location**, not its value at that particular moment. The value of `d` is updated in successive iterations
+- Frequently, the inner variable introduced to work around this problem is given the exact name as outer variable of which it is a copy, leading to odd-looking but crucial variable declaration
+
+    ```go
+    for _, dir := range tempDirs() {
+        dir := dir
+    }
+    ```
+
+- The problem of iteration variable capture is most often encountered when using the `go` statement or with `defer` since both may delay the execution of a function value until after the hoop has finished
+# Variadic functions
+- A variadic function is one that can be called with varying numbers of arguments
+    - The most familiar examples are `fmt.Printf` and its variants
+        - `Printf` requires one fixed argument at the beginning, then accepts any number of subsequent arguments
+- To declare a variadic function, the type of the final parameter is preceded by an ellipsis `...`, which indicates that the function may be called with any number of arguments of this type
+
+    ```go
+    func sum(vals ...int) int {
+        total := 0
+        for _, val := range vals { // vals is an []int
+            total += val
+        }
+        return total
+    }
+
+    values := []int{1, 2, 3, 4}
+    fmt.Println(sum(values...)) // 10
+    ```
+
+- Implicitly, the caller allocates an array, copies the arguments into it, and passes a slice of the entire array to the function
+- Variadic functions are often used for string formatting
+    - The suffix `f` is a widely followed naming convention for variadic functions that accept a `Printf`-style format string
+
+    ```go
+    // the interface{} means it can accept any values at all for its final arguments
+    func errorf(linenum int, format string, args ...interface{}){
+        fmt.Fprintf(os.Stderr, "Line %d: ", linenum)
+        fmt.Fprintf(os.Stderr, format, args...)
+        fmt.Fprintln(os.Stderr) // for newline
+    }
+    linenum, name := 12, "count"
+    errorf(linenum, "undefined: %s", name) // "Line 12 : undefined: count"
+    ```
