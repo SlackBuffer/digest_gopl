@@ -152,4 +152,10 @@
 - Toposort
     - Topological sorting
     - Directed graph
-    - Depth-first search
+    - Depth-first search (traversal)
+    - Breadth-first traversal
+- Links
+    - Extract links
+- Findlinks3
+    - Breadth-first traversal
+    - `append(slice, slice...)`

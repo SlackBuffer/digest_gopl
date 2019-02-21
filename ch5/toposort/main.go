@@ -31,8 +31,8 @@ var prereqs = map[string][]string{
 func topoSort(m map[string][]string) []string {
 	var order []string
 	seen := make(map[string]bool)
-	var visitAll func(items []string)
 
+	var visitAll func(items []string)
 	visitAll = func(items []string) {
 		fmt.Printf("%#v\n", items)
 		for _, item := range items {
@@ -66,4 +66,11 @@ func main() {
 	for i, course := range topoSort(prereqs) {
 		fmt.Printf("%d:\t%s\n", i+1, course)
 	}
+
+	fmt.Println()
+	for i, course := range topoSort2(prereqs) {
+		fmt.Printf("%d:\t%s\n", i+1, course)
+	}
 }
+
+// go run *.go
