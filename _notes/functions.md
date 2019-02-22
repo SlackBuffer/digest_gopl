@@ -517,3 +517,39 @@
 - For diagnostic purposes, the `runtime` package lets the programmer dump the stack using the same machinery (Defer2)
     - `runtime.Stack` can print information about functions that seems to have already been "unwound"
 - Go's panic mechanism runs the deferred functions before it **unwind** (释放) the stack
+# Recover
+- Giving up is usually the right response to a panic, but not always
+    - It might be possible to recover in some way, or at least clean up the mess before quitting
+    - > A web server that encounters an unexpected problem could close the connection rather leave the client hanging, and during development, it might report the error to the client too
+- If the built-in `recover` function is called within a deferred function and the function containing the `defer` statement is panicking, **`recover`** ends the current state of panic and **returns the panic value**
+- The function that was panicking does not continue where it left off but **straightly returns normally** (with or without explicit `return` statement)
+- If `recover` is called at any other time, it has no effect and returns `nil`
+- The process of developing a parser for a language
+
+    ```go
+    func Parse(input string) (s *Syntax, err error) {
+        defer func() {
+            if p := recover(); p != nil {
+                err = fmt.Errorf("internal error: %v", p)
+            }
+        }()
+        // ...parser...
+    }
+    ```
+
+    - It's preferred for the parser to turn panics into ordinary parser errors, perhaps with an extra message exhorting the user to file a bug report, instead of crashing
+    - A fancier version might include the entire call stack using `runtime.Stack`
+    - The deferred function then assigns to the `err` result, which is returned to the caller
+- Recovering indiscriminately from panics is a dubious practice because the state of a package's variables after panic is rarely well defined or documented
+- Further more, by replacing a crash with, say, a line in a log file, indiscriminate recovery may cause bugs to go unnoticed
+- Recovering from a panic within the same package can help simplify the handling of complex or unexpected errors, but as a general rule, you **should not attempt to recover from another package's panic**
+- Public APIs should report failures as `error`s
+- Similarly, you should not recover from a panic that may pass through a function you do not maintain, such as a caller-provided callback, since you cannot reason about its safety
+    - The `net/http` package provides a web server that dispatches incoming requests to user-provided handler functions
+    - Rather than let a panic in one of these handlers kill the process, the server calls `recover`, prints a stack trace, and continue serving
+    - This is convenient in practice, but it does risk leaking resources or leaving the failed handler in an unspecified state that could lead to other problems
+- For all the reasons, it's safest to **recover selectively if at all**
+    - Recover only from panic that were intended to be recovered from, which should be rare
+        - This intention can be encoded by using a distinct, unexported type for the panic value and testing whether the value returned by `recover` has that type. If so, we report the panic as an ordinary `error`; if not, we call `panic` with the same value to resume the state of panic (Title3)
+- For some conditions there is no recovery
+    - Running out of memory, for example, causes the Go runtime to terminate the program with a fatal error

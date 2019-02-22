@@ -178,3 +178,6 @@
 - Ex5.18
 - Defer1
 - Defer2
+- Title3
+- Ex5.19
+    - Use `panic`, `recover` to achieve `return`
