@@ -349,3 +349,171 @@
     linenum, name := 12, "count"
     errorf(linenum, "undefined: %s", name) // "Line 12 : undefined: count"
     ```
+
+# Deferred function calls
+- Using the output of `http.Get` as the input to `html.Parse` works well if the content of the required URL is HTML
+- Many pages contains images, plain text, and other file formats. Feeding such files into an HTML parser could have undesirable effects
+- The duplicated `resp.Body.Close()` call ensures that the network connection on all execution paths, including failures is closed. As functions grow more complex and have to handle more errors, such duplication of clean-up logic may become a maintenance problem
+- A `defer` statement is an ordinary function or method call prefixed by the keyword `defer`
+- The function and argument expressions are evaluated when the statement is executed, but the actual call is **deferred** util **the function that contains the `defer` statement has finished**, whether normally, by executing a return statement or falling off the end, or abnormally, by panicking
+- Any number of calls may be deferred; they are executed in the **reverse of the order** in which they were deferred
+- A `defer` statement is often used with paired operations like open and close, connect and disconnect, or lock and unlock to ensure that resources are released in all cases, no matter how complex the control flow
+- The right place for a `defer` statement that releases a resource is **immediately after the resource has been successfully acquired**
+
+    ```go
+    func ReadFile(filename string) ([]byte, error) {
+        f, err := os.Open(filename)
+        if err != nil {
+            return nil, err
+        }
+        defer f.Close()
+        return ReadAll(f)
+    }
+
+    var mu sync.Mutex
+    var m = make(map[string]int)
+    func lookup(key string) int {
+        mu.Lock()
+        defer mu.Unlock()
+        return m[key]
+    }
+    ```
+
+- The `defer` function can also be used to **pair "on entry" and "on exit" actions** when debugging a complex function
+    - By deferring a call to the returned function, we can instrument the entry point and all exit points of a function in a single statement and even pass value between the two actions (Trace)
+- Deferred functions run **after** return statements have updated the function's result variables
+- Because an anonymous function can access its enclosing function's variables, including named results, a deferred anonymous function can observe the function's results
+
+    ```go
+    func double(x, int) (result int) {
+        defer func() { fmt.Printf("double(%d) = %d\n", x, result )}()
+        return x + x
+    }
+    _ = double(4)
+    ```
+
+    - This trick may be useful in functions with many return statements
+- A deferred anonymous function can change the values that the enclosing function returns to its caller
+
+    ```go
+    func triple(x int) (result int) {
+        defer func() { result += x }()
+        return double(x)
+    }
+    triple(4)
+    ```
+
+- Because deferred functions aren't executed until the very end of a function's execution, a `defer` statement in a loop deserves extra scrutiny
+
+    ```go
+    for _, filename := range filenames {
+        f, err := os.Open(filename)
+        if err != nil {
+            return err
+        }
+        defer f.Close() // risky: could run out of file descriptors
+        // ...process f...
+    }
+    ```
+
+    - The code below could run out of file descriptors since no file will be closed until all files have been processed
+    - One solution is to move the loop body, including the `defer` statement, into another function that's called on each iteration
+
+        ```go
+        for _, filename := range filenames {
+            if err := doFile(filename); err != nil {
+                return err
+            }
+        }
+        func doFile(filename string) error {
+            f, err := os.Open(filename)
+            if err != nil {
+                return err
+            }
+            defer f.Close()
+            // ...process f...
+        }
+        ```
+
+- Improved fetch
+
+    ```go
+    func fetch(url string) (filename string, n int64, err error) {
+        resp, err := http.Get(url)
+        if err != nil {
+            return "", 0, err
+        }
+
+        defer resp.Body.Close()
+
+        local := path.Base(resp.Request.URL.Path)
+        if local == "/" {
+            local = "index.html"
+        }
+
+        f, err := os.Create(local)
+        if err != nil {
+            return "", 0, err
+        }
+
+        n, err = io.Copy(f, resp.Body)
+        if closeErr := f.Close(); err == nil {
+            err = closeErr
+        }
+        return local, n, err
+    }
+    ```
+
+    - It's tempting to use a second deferred call, to `f.Close()`, to close the local file, but this would be subtly wrong
+    - `os.Create` opens a file for writing, creating it as needed. On many file systems, notably NFS, write errors are not reported immediately but may be **postponed** until the file is closed. Failure to check the result of the close operation could cause serious data loss to go unnoticed
+    - If both `io.Copy` and `f.Close` fail, we should prefer to report the error from `io.Copy` since it occurred first and is more likely to tell us the root cause
+# Panic
+- Go's type system catches many mistakes at compile time, but others, like out-of-bounds array access or nil pointer dereference, requires checks at **run time**
+- When the Go runtime detects these mistakes, it panics
+- During a typical panic, **normal execution stops**, all deferred function calls **in that goroutine** are executed, and the program crashes with a log message
+    - This log message includes the panic value, which is usually an error message of some sort, and, for each goroutine, a stack trace showing the stack of function calls that were active at the time of the panic
+    - This log message often has enough information to diagnose the root cause of the problem without running the program again, so it should always be included in a bug report about a panicking program
+- Not all panics come from the runtime
+- The built-in `panic` function may be called directly; it accepts any value as an argument
+- A panic is often the best thing to do when some impossible situation happens, for instance, execution reaches a case that logically can't happen
+- Unless you can provide a more informative error message or detect an error sooner, there's no point asserting a condition that the runtime will check for you
+
+    ```go
+    func Reset(x *Buffer) {
+        if x == nil {
+            panic("x is nil") // unnecessary
+        }
+        x.elements = nil // this will panic automatically
+    }
+    ```
+
+- Since a panic cause the program to crash, it's generally used for grave errors, such as a logical inconsistency in the program
+- In a robust program, "expected" errors, the kind that arises from incorrect input, misconfiguration, or failing I/O, should be handled gracefully; they're best dealt with using `error` values
+- `regexp.Compile` compiles a regular expression into an efficient form for matching
+    - It returns an `error` if called with an ill-formed pattern, but checking this error is unnecessary and burdensome if the caller knows that a particular call cannot fail. In such cases, it's reasonable for the caller to handle an error by panicking, since it's believed to be impossible
+    - Since most regular expressions are literals in the program source code, the `regexp` package provides a wrapper function `regexp.MustCompile` that does this check
+
+    ```go
+    package regexp
+    func Compile(expre string) (*Regexp, error) { /* ... */ }
+    func MustCompile(expr string) *Regexp {
+        re, err := Compile(expr)
+        if err != nil {
+            panic(err)
+        }
+        return re
+    }
+    ```
+
+    - The wrapper function makes it convenient for clients to initialize a package-level variable with a compiled regular expression
+
+        ```go
+        var httpSchemeRE = regexp.MustCompile(`^https?:`)
+        ```
+        
+- Of course, `MustCompile` should not be called with untrusted input values
+- The `Must` prefix is a common naming convention functions of this kind
+- When a panic occurs, all deferred functions are run in **reverse order**, starting with those of the topmost function on the stack and proceeding up to the `main`
+- For diagnostic purposes, the `runtime` package lets the programmer dump the stack using the same machinery (Defer2)
+    - `runtime.Stack` can print information about functions that seems to have already been "unwound"
+- Go's panic mechanism runs the deferred functions before it **unwind** (释放) the stack

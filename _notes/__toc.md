@@ -167,3 +167,14 @@
     - `errors.New`
 - Ex5.16
 - Ex5.17
+- Title1
+    - `resp.Header.Get`
+    - `fmt.Errorf`
+- Title2
+    - `defer resp.Body.Close()`
+- Trace
+- Fetch
+    - Preferred error
+- Ex5.18
+- Defer1
+- Defer2

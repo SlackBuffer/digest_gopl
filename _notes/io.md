@@ -1,6 +1,7 @@
 - Send EOF
     - Unix: `ctrl+d`
     - Windows: `ctrl+z`
+- `strings.NewReader`
 - `bufio.Scanner`
     - A type that reads input and breaks it into lines or words
     - Often the easiest way to process input that comes naturally in lines
