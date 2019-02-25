@@ -60,7 +60,7 @@
 - Well-chosen names can document the significance of a function's results
 - It's not always necessary to name multiple results solely for documentation
     - **Convention** dictates that a final `bool` result indicates success; an `error` result often needs no explanation
-- In a function with named results, the **operands of a return statement may omitted**, called a **bare return**
+- In a function used named results, the **operands of a return statement may be omitted**. It's called a **bare return**
 - A bare return is shorthand way to return each of the named result variables in order
 - In functions with many return statements and several results, bare returns can reduce code duplication, but they rarely make code  easier to understand
     - Bare returns are best used sparingly

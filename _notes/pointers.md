@@ -1,3 +1,4 @@
+# Pointers
 - A pointer value is the address of a variable
     - Not every value has an address, but every variable does
 - A pointer is the location at which a value is stored
@@ -33,3 +34,31 @@
 - Each time we take the address of a variable or copy a pointer, we create new aliases to identify the same variable
 - Aliasing also occurs when we copy values of other reference types like slices, maps, and channels, and even structs, arrays, and interfaces that contain these types
 - Pointer aliasing is useful but is a double-edged sword: to find all the statements that access a variable, we have to know all its aliases
+## Shorthands
+
+```go
+var employeeOfTheMonth *Employee = &dilbert
+employeeOfTheMonth.Position += " (proactive team player)"
+
+// equivalent to
+(*employeeOfTheMonth).Position +=  " (proactive team player)"
+
+
+func (p *Point) ScaleBy(factor float64) {
+    p.X *= factor
+    p.Y *= factor
+}
+
+
+pp := &Point{1, 2}
+// equivalent to
+pp := new(Point) // returns an address
+*pp = Point{1, 2}
+
+
+p := Point{1, 2}
+(&p).ScaleBy(2)
+
+// shorthand
+p.ScaleBy(2)
+```

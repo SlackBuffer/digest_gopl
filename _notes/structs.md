@@ -37,7 +37,7 @@
     EmployeeById(dilbert.ID).Salary = 0
     ```
 
-    - If the result type of `EmployeeByID` were changed to `Employee` instead of `*Employee`, the assignment statement would not compile since its left-hand side would not identify a variable (a struct literal)
+    - If the result type of `EmployeeByID` were changed to `Employee` instead of `*Employee`, the assignment statement would not compile since its left-hand side would not identify a variable (but **a struct literal**)
 - Fields are usually written one per line, with the field's name receding its type, but consecutive fields of the same type may be combined
 
     ```go

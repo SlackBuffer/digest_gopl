@@ -13,6 +13,8 @@
     - The letters of acronyms and initialisms like ASCII and HTML are always rendered in the **same case**
 - Go does not permit unused local variables. Use the **blank identifier `_`** whenever syntax requires a variable name but program logic does not
 - Simplify redundant boolean expressions like `x==true` to `x`
+- When naming a getter method, we usually omit the `Get` prefix
+    - This preference for brevity extends to all methods, not just field accessors, and to other redundant prefixes as well, such as `Fetch`, `Find`, and `Lookup`
 # Good practices
 - `if`, `switch`, `for` statements can include an optional simple statement-a short variable declaration, an increment or assignment statement, or a function call-that can be used to set a value before it is tested
 

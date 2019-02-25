@@ -181,3 +181,11 @@
 - Title3
 - Ex5.19
     - Use `panic`, `recover` to achieve `return`
+# ch6
+- Geometry
+- urlvalues
+- Intset
+    - Bit vector
+    - `bytes.Buffer`, `WriteByte`
+    - `fmt`, `String`
+- [ ] Ex6.1-Ex6.5: later

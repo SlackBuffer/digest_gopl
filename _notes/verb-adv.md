@@ -1,3 +1,6 @@
+- The `fmt` package treats types with a `String` method specially so that values of complicated types can display themselves in a user-friendly manner
+    - Instead of printing the raw representation of the value, `fmt` calls the `String` method
+        - > The mechanism relies on interfaces and type assertions
 # Verbs
 - https://golang.org/pkg/fmt/
 
