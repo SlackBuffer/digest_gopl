@@ -189,3 +189,7 @@
     - `bytes.Buffer`, `WriteByte`
     - `fmt`, `String`
 - [ ] Ex6.1-Ex6.5: later
+# ch7
+- Bytecounter
+- Ex7.1
+- [ ] Ex7.2, Ex7.3
