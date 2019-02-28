@@ -17,6 +17,7 @@ func main() {
 
 	c = 0
 	var name = "Dolly"
+	// Fprintf 将输入格式化后写入第一个参数（`io.Writer` interface type）
 	fmt.Fprintf(&c, "hello, %s", name)
 	fmt.Println(c) // 12, len("hello, Dolly")
 }

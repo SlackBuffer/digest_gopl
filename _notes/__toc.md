@@ -193,3 +193,7 @@
 - Bytecounter
 - Ex7.1
 - [ ] Ex7.2, Ex7.3
+- [ ] Ex7.4, Ex7.5
+- Sleep
+- Tempconv1, Tempflag
+- [ ] Ex7.6, Ex7.7

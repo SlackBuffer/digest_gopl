@@ -101,3 +101,98 @@
     ```
 
 - The order in which the methods appear don't matter
+# Interface satisfaction
+- **A type satisfies an interface** if it possesses all the methods the interface requires
+    - `*os.File` satisfies `io.Reader`, `Writer`, `Closer`, `ReadWriter`
+    - `*bytes.Buffer` satisfies `Reader`, `Writer`, `ReadWriter`
+- As a shorthand, Go programmers often say that a concrete type **"is a"** particular interface, meaning that it satisfies the interface
+    - A `*bytes.Buffer` is an `io.Writer`; an `*os.File` is an `io.ReadWriter`
+- An expression may be assigned to an interface if its type satisfies the interface
+    - This rule applies even when the right-hand side is itself an interface
+- It's legal to call a `*T` method on an argument of type `T` so long as the argument is a variable; the compiler implicitly takes its address. This is mere **syntactic sugar**
+- A value of type `T` does not possess all the methods that a `*T` pointer does, and as a result it might satisfy fewer interfaces
+
+    ```go
+    type IntSet struct { /* ... */ }
+    func (*IntSet) String() string
+    // cannot call that method on a non-addressable IntSet value
+    var _ = IntSet{}.String() // compile error
+    // s is a variable and &s has a String method
+    var s IntSet
+    var _ = s.String()
+    var _ fmt.Stringer = &s
+    var _ fmt.Stringer = s // compile error: IntSet lacks String method
+    ```
+
+- An interface wraps and conceals the concrete type and value that it holds. Only the methods revealed by the interface type may be called, even if the concrete type has others
+
+    ```go
+    os.Stdout.Write([]byte("hello")) // OK: *os.File has Write method
+    os.Stdout.Close // OK: *os.File has Close method
+
+    var w io.Writer
+    w = os.Stdout
+    w.Write([]byte("hello")) // OK: *os.File has Write method
+    w.Close // compile error: io.Writer lacks Close method
+    ```
+
+- The type `interface{}` (empty interface type) places no demands on the types that satisfy (implement) it, we can assign any value to the empty interface
+- Since interface satisfaction depends only on the methods of the 2 types involved, there's no need to declare the relationship between a concrete type and the interfaces it satisfies
+    - That said, it's occasionally useful to document and **assert** the relationship when it's intended but not otherwise enforced by the program
+
+    ```go
+    // asserts at compile time that a value of type *bytes.Buffer satisfies `io.Writer`
+    var w io.Writer = new(bytes.Buffer)
+    ```
+
+    - We needn't allocate a new variable since any value of type `*bytes.Buffer` will do, even `nil`, which we write as `(*bytes.Buffer)(nil)` using an explicit conversion
+    - Since we never intend to refer to `w`, we can replace it with the blank identifier
+
+        ```go
+        var _ io.Writer = (*bytes.Buffer)(nil)
+        ```
+
+- Non-empty interface types such as `io.Writer` are most often satisfied by a **pointer** type, particularly when one or more of the interface methods implies some kind of **mutation to the receiver**, as the `Writer` method does
+    - A pointer to a struct is an especially common method-bearing type
+- Pointer types are by not the only types that satisfy interfaces
+- Even interfaces with mutator methods may be satisfied by one of Go's other reference types
+- Basic types may satisfy interfaces
+- A concrete type may satisfy many unrelated interfaces
+- Interfaces are one useful way to group related concrete types together and express the facets they share in common
+
+    ```go
+    type Audio interface {
+        Stream() (io.ReadCloser, error)
+        RunningTime() time.Duration
+        Format() string // e.g., MP3, WAV
+    }
+    type Video interface {
+        Stream() (io.ReadCloser, error)
+        RunningTime() time.Duration
+        Format() string // e.g., MP3, WMV
+        Resolution() (x, y int)
+    }
+    type Streamer interface {
+        Stream() (io.ReadCloser, error)
+        RunningTime() time.Duration
+        Format() string // e.g., MP3, WAV
+    }
+    ```
+
+    - In order to handle `Audio` and `Video` items in the same way, we can define a `Streamer` interface to represent their common aspects without changing any existing type declarations
+- Each grouping of concrete types based on their shared behaviors can be expressed as an interface type
+- Unlike class-based languages, in which the set of interfaces satisfied by a class is explicit, in Go,we can define new abstractions or groupings of interest when we need them, without modifying the declaration of concrete type
+# Parsing flags with `flag.Value`
+- `flag.Value` is the interface to the value stored in a flag
+
+    ```go
+    package flag
+    type Value interface {
+        String() string
+        Set(string) error
+    }
+    ```
+
+    - `String` formats the flag's value for use in command-line help messages; every `flag.Value` is also a `fmt.Stringer`
+    - `Set` parses its string argument and updates the flag value
+- In order to define new flag notations for our own ata types, we need only define a type that satisfies the `flag.Value` interface
