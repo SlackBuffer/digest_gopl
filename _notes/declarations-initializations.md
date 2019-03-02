@@ -1,6 +1,6 @@
 # Declaration
 - `var name type = expression`
-    - Either the type or the `=expression` part may be omitted, but not both
+    - Either the type or the `= expression` part may be omitted, but not both
         1. If the type is omitted, it's determined by the initializer expression
         2. If the expression is omitted, the initial value is the zero value for the type
 - Short variable declaration: `name := expression`

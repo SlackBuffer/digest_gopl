@@ -197,3 +197,17 @@
 - Sleep
 - Tempconv1, Tempflag
 - [ ] Ex7.6, Ex7.7
+- Sorting
+    - `*structType` vs `structType` as function parameter
+    - `Flush`
+    - `sort.Reverse`
+    - `new(tabwriter.Writer).Init`
+- http1, http2
+    - `WriteHeader`
+    - `http.Error`
+- http3
+    - `NewServeMux`, `Handle`, `HandleFunc`
+    - `http.HandleFunc`
+- Eval
+    - `strings.ContainsRune`
+- Surface

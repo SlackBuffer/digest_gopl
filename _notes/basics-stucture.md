@@ -9,6 +9,9 @@
         1. The opening brace `{` of the function must be on the same line as the end of the `func` declaration, not on a line by itself
         2. In the expression `x + y`, a newline is permitted after but not before the `+` operator
 - All **indexing** in Go uses **half-open** intervals that include the first index but exclude the last
+- **expression**
+    - Right hand of `=`
+    - > `var name type = expression`
 - `++`, `--`
     - **Prefix** only
     - **Statements**, not expressions (so `j = i++` is illegal)

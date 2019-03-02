@@ -14,7 +14,7 @@
     - If `i` is omitted, it's 0; if `j` is omitted, it's `len(s)`
 - Slicing beyond `cap(s)` causes a panic
 - Slicing beyond `len(s)` extends the slice, so the result may be longer than the original
-- Since a slice contains a pointer to an element of an array, passing a slice to a function permits the function to modify the underlying array elements. In other words, copying a slice creates an alias for the underlying array
+- Since a slice contains a pointer to an element of an array, passing a slice to a function permits the function to **modify** the underlying array elements. In other words, copying a slice creates an alias for the underlying array
 - A slice literal looks like an array literal, a sequence of values separated by commas and surrounded by braces, but the size is not given. 
 - This implicitly creates an array variable of the right size and yields a slice that points to it
 
@@ -34,7 +34,7 @@
 
 - The zero value of a slice type is `nil`
 - A nil slice has no underlying array. The nil slice has length and capacity zero
-- There're also non-nil slices of length and capacity zero (***`[]int{}`***, `make([]int, 3)[3:]`)
+- There're also non-nil slices of length and capacity zero (**`[]int{}`**, `make([]int, 3)[3:]`)
 - The nil value of a particular slice can be written using a conversion expression such as `[]int(nil)`
 - Use `len(s) == 0`, not `s == nil` to test whether a slice is empty
 - Other than comparing equal to `nil`, a nil slice behaves like any other zero-length slice
@@ -66,7 +66,7 @@
 - Usually we don't know whether a given call to `append` will cause a reallocation, so we can't assume that the original slice refers to the same array as the resulting slice, nor that it refers to a different one
 - Similarly, we must not assume that operations on elements of the old slice will (or will not) be reflected in the new slice
 - As a result, it's usual to assign the result of a call to `append` to the same slice whose value was passed to `append`
-- Updating the slice variable is required not just when calling `append`, but for any function that may change the **length** or **capacity** of a slice or make it refer to a different **underlying array**
+- **Updating the slice variable** is required not just when calling `append`, but for any function that may change the **length** or **capacity** of a slice or make it refer to a different **underlying array**
 - Although the elements of the underlying array are indirect, the slice's pointer, length, and capacity are not. To update them requires an assignment like `runes = append(runes, r)`
 - In this respect, slices are not "pure" reference types but resemble an aggregate type such as this struct
 

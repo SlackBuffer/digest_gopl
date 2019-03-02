@@ -186,3 +186,5 @@
 - The outer struct type gains not just the fields of the embedded type but its methods too
 - This mechanism is the main way complex object behaviors are composed from simpler ones
     - Composition is central to object-oriented programming in Go
+
+- > Although the code would work if we stored the `Track`s directly, the sort function will swap many pairs of elements, so it will run faster if each element is a pointer, which is a single machine word, instead of an entire Track, which might be eight words or more
