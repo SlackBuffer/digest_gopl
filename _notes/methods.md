@@ -1,5 +1,5 @@
 - An **object** is simply a value or variable that has methods
-- A method is a function associated with a (**any**) named type
+- A method is a **function** associated with a (**any**) named type
 - An object-oriented program is one that uses methods to express the properties and operations of each data structures so that **clients need not access the object's representation directly**
 
     ```go
@@ -53,6 +53,7 @@
     - Go allows methods to be associated with any type
     - It's often convenient to define additional behaviors for simple types such as numbers, strings, slices, maps, and sometimes even functions
 - Methods may be declared on any named type **defined in the same package**, so long as its underlying type is neither a **pointer** nor an **interface**
+    - You cannot declare a method with a receiver whose type is defined in another package (which **includes the built-in types** such as `int`)
 - All methods of a given type must have unique names, but different types can use the same name for a method; there's no need to qualify function names (for example, `PathDistance`) to disambiguate
 - The first benefit to using methods over ordinary functions: methods names can be shorter
     - The benefit is magnified for calling originating outside the package, since they can use the shorter name and omit the package name
@@ -78,6 +79,7 @@
     ```
 
     - The name of this method is `(*Point).ScaleBy`. Parentheses are necessary
+- In general, all methods on a given type should have either value or pointer receivers, but not a mixture of both
 - In a realistic program, **convention** dictates that if any method of `Point` has a pointer receiver, the **all methods** should have a pointer receiver, even ones that don't strictly need it
 - **Named type and pointers to them** are the only types that may appear in a receiver declaration
 - To avoid ambiguities, method declarations are not permitted on named types that are themselves pointer types
@@ -105,6 +107,8 @@
     (*pptr).Distance(q)
     ```
 
+- Functions with a pointer argument must take a pointer; methods with pointer receivers take either a value or a pointer as the receiver when they are called
+- Functions that take a value argument must take a value of that specific type; methods with value receivers take either a value or a pointer as the receiver when they are called
 - Summarize 3 cases (**compiler will perform implicit magic for *receiver***)
    1. The receiver argument has the same type as the receiver parameter (both have type `T` or both have type `*T`)
    2. The receiver argument is a variable of type `T` and the receiver parameter has type `*T`
@@ -125,6 +129,9 @@
     - For example, `time.Duration` values are liberally copied, including as arguments to functions
 - If any method has a pointer receiver, you should avoid copying instances of `T` because doing so may violate internal invariants
     - For example, copying an instance of `bytes.Buffer` would cause the original and the copy to alias the same underlying array of bytes. Subsequent method calls would have unpredictable effects
+- 2 reasons to use a pointer receiver
+    1. The method can modify the value that its receiver points to
+    2. Avoid copying the value on each method call. This can be more efficient if the receiver is a large struct
 ## Nil is a valid receiver value
 - Just as some functions allow nil pointers as arguments, so do some methods for their receiver, especially if `nil` is a meaningful zero value of the type, as with maps and slices
 

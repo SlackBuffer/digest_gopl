@@ -1,3 +1,214 @@
+# Plain Words
+- 多态
+    - 函数参数类型是接口类型
+    - 调用函数时，传实现该接口的 concrete type 作为参数
+    - 效果是调用到该接口在对应类型下的特定实现
+# A Tour of Go
+- An interface type is defined as a set of method signatures
+- A **value** of interface type can ***hold* any value** that implements those methods
+- **A type implements an interface by implementing its methods**
+    - There's no explicit declaration of intent, no "implement" keyword
+
+        ```go
+        type I interface {
+            M()
+        }
+        type T struct {
+            S string
+        }
+        // This method means type T implements the interface I,
+        // but we don't need to explicitly declare that it does so
+        func (t T) M() {
+            fmt.Println(t.S)
+        }
+        ```
+
+        - Implicit interfaces decouple the definition of an interface from its implementation, which could then appear in any package without prearrangement
+- Under the hood, interface values can be thought of as a **tuple** of a value and a concrete type - **`(value, type)`**
+- A interface value holds a value of a specific underlying **concrete type**
+- Calling a method on an interface value executes the method of the same name on its underlying concrete type
+
+    ```go
+    type I interface {
+        M()
+    }
+    type T struct {
+        S string
+    }
+    func (t *T) M() {
+        fmt.Println(t.S)
+    }
+    type F float64
+    func (f F) M() {
+        fmt.Println(f)
+    }
+    func main() {
+        var i I
+        i = &T{"Hello"}
+        describe(i) // &{Hello} ,*main.T
+        i.M()
+
+        i = F(math.Pi)
+        describe(i) // 3.141592653589793, main.F
+        i.M() // 3.141592653589793
+    }
+    func describe(i I) {
+        fmt.Printf("%v, %T", i, i)
+    }
+    ```
+
+- If the concrete value inside the interface itself is nil, the method will be called with a nil receiver
+    - An interface value that holds a nil concrete value is itself non-nil
+- A nil interface value holds neither value nor concrete type
+- Calling a method on a nil interface is a run-time error because there's no type inside the interface tuple to indicate which concrete method to call
+
+    ```go
+    type I interface {
+        M()
+    }
+    func main() {
+        var i I
+        describe(i)
+        i.M()
+    }
+    func describe(i I) {
+        fmt.Printf("(%v, %T)\n", i, i)
+    }
+    ```
+
+- The interface type that specifies 0 methods is known as the empty interface (`interface{}`)
+    - An empty interface may hold values of any type (Every type implements at least 0 method)
+    - Empty interfaces are used by code that handles values of unknown type
+## Type assertion
+- 不论是否能成功，选择一个类型 `T`，断言一个接口 `i` hold 的 concrete type 是类型 `T`
+    1. 断言成功即拿到该 concrete value 的值
+    2. 断言失败拿到类型 `T` 的 zero value
+- A type assertion provides access to an interface value's **underlying concrete value**
+
+    ```go
+    t := i.(T) // T is type
+    ```
+
+    - This statement asserts that the interface value `i` holds the concrete ***type*** `T` and assigns the underlying `T` value to the variable `t`
+    - If `i` does not hold a `T`, it will trigger a panic
+- To test whether an interface holds a specific type, a type assertion can return 2 values: the underlying value and a boolean value that reports whether the assertion succeeded
+
+    ```go
+    t, ok := i.(T)
+    ```
+
+    - If `i` holds a `T`, then `t` will be the underlying value (**of type `T`**) and `ok` will be true
+    - If not, `ok` wil be false and `t` will be the zero value of type `T`, and no panic occurs
+
+    ```go
+    var i interface{} = "hello"
+    s := i.(string)
+    fmt.Println(s)
+    s, ok := i.(string)
+    fmt.Println(s, ok)
+
+    f, ok := i.(float64)
+    fmt.Println(f, ok)
+    f = i.(float64) // panic
+    fmt.Println(f)
+    ```
+
+## Type switches
+- 类型匹配用于测试接口类型 `i` hold 的值是什么类型的
+    1. 匹配成功后，就是一个类型断言
+    2. 匹配失败，见 default
+- A type switch is a construct that permits **several type assertions in series**
+- A type switch ia like a regular switch statement, but the cases specify types (not values), and those values are compared against the type of the value held by the given interface
+- The declaration in a type switch has the same syntax as a type assertion, but the specific type `T` is replaced with the keyword `type`
+
+    ```go
+    switch v := i.(type) {
+    case T:
+        // here v has type T
+    case S:
+        // here v has type S
+    default:
+        // no match; here v has the same type as i
+    }
+    ```
+
+    - The switch statement tests whether the interface value `i` holds a value of type `T` of `S`
+    - In each case of `T` and `S` case, the variable `v` will be of type `T` or `S` respectively and hold the value held by `i`
+    - In the **default case** (where there' no match), `v` is of the same interface type and value as `i`
+
+    ```go
+    func do(i interface{}) {
+        switch v := i.(type) {
+        case int:
+            fmt.Printf("Twice %v is %v\n", v, v*2)
+        case string:
+            fmt.Printf("%q is %v bytes long\n", v, len(v))
+        default:
+            fmt.Printf("I don't know about type %T!\n", v)
+        }
+    }
+    do(21)
+    do("hello")
+    do(true)
+    ```
+
+## Stringers
+- One of the most ubiquitous interfaces is `Stringer` defined by the `fmt` package
+
+    ```go
+    type Stringer interface {
+        String() string
+    }
+    ```
+
+- A `Stringer` is a type that can describe itself as a string
+- The `fmt` and many other packages **look for this interface to print values**
+
+    ```go
+    type Person struct {
+        Name string
+        Age int
+    }
+    func (p Person) String() string {
+        // return formatted string
+        return fmt.Sprintf("%v (%v years)", p.Name, p.Age)
+    }
+    a := Person{"SB", 30}
+    fmt.Println(a)
+    ```
+
+## Errors
+- Go programs express error state with `error` values
+- The `error` type is a built-in interface similar to `fmt.Stringer`
+
+    ```go
+    type error interface {
+        Error() string
+    }
+    ```
+
+    - The `fmt` package looks for the `error` interface when printing values
+
+```go
+type MyError struct {
+    When time.Time
+    What string
+}
+func (e *MyError) Error() string {
+    return fmt.Sprintf("at %v, %s", e.When, e.What)
+}
+func run() error {
+    return &MyError{
+        time.Now(),
+        "it didn't work"
+    }
+}
+if err := run(); err != nil {
+    fmt.Println(err)
+}
+```
+
+- > https://stackoverflow.com/questions/27928744/an-infinite-loop-produced-by-fmt-sprinte-inside-the-error-method
 # Summaries
 - Satisfy - implement all methods of
 - A call through an interface must use dynamic dispatch instead of a direct call

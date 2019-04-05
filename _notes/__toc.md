@@ -210,6 +210,9 @@
     - `http.HandleFunc`
 - Eval
     - `strings.ContainsRune`
+    - `go test`
 - Surface
 - xmlselect
     - Push start element, pop end element
+# ch8
+- Spinner

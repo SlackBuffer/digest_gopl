@@ -7,3 +7,5 @@
     git clone https://github.com/golang/net.git $GOPATH/src/golang.org/x/net
     go install net
     ```
+
+- `killall clock1` kills all processes with the given name
