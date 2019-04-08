@@ -44,7 +44,7 @@ func handleConn(c net.Conn) {
 }
 
 // go run main.go
-// "netcat"
+// "netcat" program
 // nc localhost 8000
 
 // can also use telnet
