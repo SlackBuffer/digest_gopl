@@ -25,3 +25,14 @@
     - The selected components of will be displayed in the selected formats
     - The `time` package defines templates for many standard time formats， such as `time.RFC1123`
     - The same mechanism is used in reverse when passing a time using `time.Parse`
+## Example: concurrent echo server
+- In adding `go` keywords, we had to consider carefully that it's safe to call methods of `net.Conn` concurrently, which is not true for most types
+# Channels
+- A channel is a communication mechanism that lets one goroutine send values to another goroutine
+- Each channel is a conduit (pipe) for values of a particular type, called the channel's **element type**
+    - The type of a channel whose elements have type `int` is written `chan int`
+- Use `make` to create a channel
+
+    ```go
+    ch := make(chan int)
+    ```

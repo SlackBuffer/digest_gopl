@@ -208,7 +208,35 @@ if err := run(); err != nil {
 }
 ```
 
-- > https://stackoverflow.com/questions/27928744/an-infinite-loop-produced-by-fmt-sprinte-inside-the-error-method
+- A call to `fmt.Sprint(e)` inside the `Error` method wil send the program into an infinite loop
+    - > https://stackoverflow.com/questions/27928744/an-infinite-loop-produced-by-fmt-sprinte-inside-the-error-method
+## Readers
+- The `io` package specifies the `io.Reader` interface that represents the read end of a stream of data
+- The `io.Reader` has a `Read` method
+
+    ```go
+    func (T) Read(b []byte) (n int, err error)
+    ```
+
+    - `Read` populates the given byte slice with data and returns the number of bytes populated and an error value
+    - It returns an `io.EOF` error when the stream ends
+  
+        ```go
+        // creates a `strings.Reader` and consumes its output 8 bytes at a time
+        func main() {
+            r := strings.NewReader("hello, reader!")
+            b := make([]byte, 8)
+            for {
+                n, err := r.Read(b)
+                fmt.Printf("n = %v err = %v b = %v\n", n, err, b)
+                fmt.Printf("b[:n] = %q\n", b[:n])
+                if err == io.EOF {
+                    break
+                }
+            }
+        }
+        ```
+
 # Summaries
 - Satisfy - implement all methods of
 - A call through an interface must use dynamic dispatch instead of a direct call
