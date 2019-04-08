@@ -9,3 +9,5 @@
     ```
 
 - `killall clock1` kills all processes with the given name
+- 当前终端走代理：`export https_proxy=socks5://127.0.0.1:1086`
+    - ShadowSocks - Local socks5 listen address && port
