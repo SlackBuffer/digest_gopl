@@ -201,3 +201,59 @@
     ```go
     ch := make(chan int)
     ```
+
+- As with maps, a channel is a **reference** to the data structure created by `make`
+- The zero value of a channel is `nil`
+- 2 channels of the same type may be compared using `==`
+    - The comparison is true if both are references to the same channel data structure
+    - A channel may be compared to `nil`
+- A channel has 2 principal operations, send and receive, collectively known as communications
+- A send statement transmits a value from one goroutine, through the channel, to another goroutine executing **a corresponding receive operation**
+    - In a send statement, the `<-` separates the channel and value operands
+    - In a receive expression, `<-` precedes the channel operand
+    - A receive expression whose result is not used is a valid statement
+
+    ```go
+    ch <- x // send
+    x = <-ch // receive
+    <-ch // receive; result is discarded
+    ```
+
+- Channels support a third operation, `close`, which sets a flag indicating that no more values will ever be send on this channel; subsequent attempts to send will panic
+
+    ```go
+    // built-in `close`
+    close(ch)
+    ```
+
+- Receive operations on a closed channel yield the values that have been send until no more values are left; any receive operations **thereafter** complete immediately and yield the **zero value of the channel's element type**
+- A channel created with a simple call to `make` is called an unbuffered channel
+- `make` accepts an optional second argument, an integer called the channel's **capacity**. If the capacity is non-zero, `make` creates a buffered channel
+## Unbuffered channels
+- A send operation on an unbuffered channel **blocks the sending goroutine** until **another goroutine** executes a corresponding receive **on the same channel**, at which point the value is transmitted and both goroutines may continue
+- Conversely, if the receive operation was attempted first, the receiving goroutine is block until another goroutine performs a send on the same channel
+- Communication over an unbuffered channel (synchronous channel) causes the sending and receiving goroutines to **synchronize**
+- When a value is sent on an unbuffered channel, the receipt of the value **happens before** the reawakening of **sending** goroutine
+- In a discussion of concurrency, when we say `x` happens before `y`, we don't mean merely that `x` occurs earlier in time than `y`; we mean that it's **guaranteed** to do so and that all its prior effects, such as updates to variables, are complete and that you **may rely on them**
+- When `x` neither happens before `y` nor after `y`, we say `x` is concurrent with `y`
+- Messages sent over channels have 2 important aspects
+   1. Each message has a value
+   2. Sometimes the fact of communication and the moment at which it occurs are just important
+        - Messages are called events when this aspect is to be stressed
+        - When the event carries no additional information and its sole purpose is synchronization, we'll emphasize this by using a channel whose element type is `struct{}`
+            - It's common to use a channel of `bool` or `int` for the same purpose since `done <- 1` is shorter that `done <- struct{}{}`
+## Pipelines
+- Channels can be used to connect goroutines together so that the output of one is the input to another. This is called a pipeline
+- If the sender knows that no further values will ever be sent on a channel, it's useful to communicate this fact to the receiver goroutine so that they stop waiting
+- This is accomplished by closing the channel using the build-in `close` function
+- After a channel has been closed, any further send operations on it will **panic**
+- After the last sent element has been received, all subsequent receive operations will proceed **without blocking** but will yield a zero value of channel's element type 
+- A variant of the receive operation produces 2 results: the received channel element, plus a boolean value, which is `true` for a successful receive and `false` for a receive on a closed and drained channel
+- Using a `range` loop to iterate over channels is a more convenient syntax for receiving all values sent on a channel and terminating the loop after the last one
+- Needn't close every channel when you've finished with it
+- It's only necessary to close a channel when it's important to tell the receiving goroutines that all data have been sent
+- A channel that the garbage collector determines to be unreachable will have its resources reclaimed whether or not it is closed
+    - Don't confuse this with the close operation for open files. It's important to call the `Close` method on every file when you've finished with it
+- Attempting to close an **already-closed** channel causes a panic, as does closing a **nil** channel
+- Closing channels has another use as a **broadcast** mechanism
+## Unidirectional channel type
