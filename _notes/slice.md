@@ -68,7 +68,7 @@
 - As a result, it's usual to assign the result of a call to `append` to the same slice whose value was passed to `append`
 - **Updating the slice variable** is required not just when calling `append`, but for any function that may change the **length** or **capacity** of a slice or make it refer to a different **underlying array**
 - Although the elements of the underlying array are indirect, the slice's pointer, length, and capacity are not. To update them requires an assignment like `runes = append(runes, r)`
-- In this respect, slices are not "pure" reference types but resemble an aggregate type such as this struct
+- In this respect, slices are not "pure" reference types but ***resemble an aggregate type*** such as this struct
 
     ```go
     type IntSlice struct {

@@ -16,7 +16,7 @@ func main() {
 	}
 
 	for {
-		// the listener's `Accept` method blocks until an incoming connection request request is made,
+		// the listener's `Accept` method blocks (waiting for a connection to come in) until an incoming connection request request is made,
 		// then returns a `net.Conn` representing the connection
 		conn, err := listener.Accept()
 		if err != nil {
@@ -24,11 +24,16 @@ func main() {
 			continue
 		}
 
-		// starts a new goroutine and keep the for loop going
+		// The second must wait until the first client is finished because the server is sequential
+		// Adding the `go` keyword causes each call to `handleConn` to run in its own goroutine
+		// and let the main goroutine just handles the Accept thing
+
+		// starts a new goroutine and keep the `for` loop going
 		// otherwise only one connection can be handled,
-		// because there's also a infinite loop at work
-		// in `handleConn` function
-		go handleConn(conn) // handle one connection at a time
+		// because there's also an **infinite loop** at work
+		// in `handleConn` function. The control won't go back
+		// from `handleConn` to `Accept` until after one connection is done
+		go handleConn(conn)
 	}
 }
 

@@ -181,8 +181,8 @@
     ```
 
 - When the `main` function returns, **all** goroutines are abruptly terminated and the **program exists**
-    - Other than by returning from `main` or existing the program, there is no programmatic way for one goroutine to stop another
-    - There are ways to communicate with a goroutine to request that it stop itself
+    - Other than by returning from `main` or existing the program, there is **no programmatic way for one goroutine to stop another**
+    - There are ways to communicate with a goroutine to **request that it stop itself**
 ## Example: concurrent clock server
 - `time.Time.Format` provides a way to format date and time information by example
     - Its argument is a template indicating how to format a reference time, specially `Mon Jan 2 03:04:05PM 2006 UTC-0700`
@@ -247,13 +247,93 @@
 - If the sender knows that no further values will ever be sent on a channel, it's useful to communicate this fact to the receiver goroutine so that they stop waiting
 - This is accomplished by closing the channel using the build-in `close` function
 - After a channel has been closed, any further send operations on it will **panic**
-- After the last sent element has been received, all subsequent receive operations will proceed **without blocking** but will yield a zero value of channel's element type 
+- After the last sent element has been received, **all subsequent receive operations will proceed without blocking** but will yield a zero value of channel's element type 
 - A variant of the receive operation produces 2 results: the received channel element, plus a boolean value, which is `true` for a successful receive and `false` for a receive on a closed and drained channel
 - Using a `range` loop to iterate over channels is a more convenient syntax for receiving all values sent on a channel and terminating the loop after the last one
 - Needn't close every channel when you've finished with it
-- It's only necessary to close a channel when it's important to tell the receiving goroutines that all data have been sent
+- It's only necessary to close a channel when it's important to **tell the receiving goroutines that all data have been sent**
 - A channel that the garbage collector determines to be unreachable will have its resources reclaimed whether or not it is closed
     - Don't confuse this with the close operation for open files. It's important to call the `Close` method on every file when you've finished with it
 - Attempting to close an **already-closed** channel causes a panic, as does closing a **nil** channel
 - Closing channels has another use as a **broadcast** mechanism
 ## Unidirectional channel type
+- When a channel is supplied as a function parameter, it's nearly always with the intent that it be used exclusively for sending or exclusively for receiving
+- `chan<- int` is a send-only channel of `int`, allows sends but not receives
+- `<-chan int` is a receive-only channel of `int`, allows receives but not sends
+- Violations of this principle are detected at compile time
+- Since the `close` operation asserts that no more sends will occur on a channel, only the sending goroutine is in a position to call it, and for this reason it's a compile-time error to attempt to close a receive-only channel
+- Conversions from bidirectional to unidirectional channel types are permitted in any assignment
+    - There's **no going back**
+    - Once you have a value of a unidirectional type such as `chan<- int`, there's no way to obtain from it a value of type `chan int` that refers to the same channel data structure
+## Buffered channels
+- A buffered channel has a **queue** of elements
+- The queue's maximum size is determined when it's created by the capacity argument to `make`
+- A send operation on a buffered channel inserts an element at the back of the queue, and a receive operation removes an element from the front
+- If the channel is full, the send operation blocks its goroutine until space is made available by another goroutine's receive
+- If the channel is empty, a receive operation blocks until a value is sent by another goroutine
+- Can send up to 3 values on `ch` (`ch := make(chan string, 3)`) without the goroutine blocking
+    - When the channel is full, a fourth send statement would block
+    - If one value is received, the channel is neither full nor empty, so either a send operation or a receive operation could proceed without blocking
+    - In this way, the channel's buffer **decouples the sending and receiving goroutines**
+- Use `cap(ch)` to obtain `ch`'s buffer capacity
+- When applied to a channel, the built-in `len` function returns the number of elements **currently buffered**
+- Novices are sometimes tempted to use buffered channels within a single goroutine as a queue, lured by their pleasingly simple syntax, but this is a mistake
+    - Channels are deeply connected to goroutine scheduling, and without another goroutine receiving from the channel, a sender - and perhaps the whole program - risks becoming blocked forever
+    - If all you need is a simple queue, make one using a slice
+- A buffered channel
+
+    ```go
+    func mirroredQuery() string {
+        response := make(chan string, 3)
+        go func() { response <- request("asia.gopl.io") }()
+        go func() { response <- request("europe.gopl.io") }()
+        go func() { response <- request("americas.gopl.io") }()
+        return <-responses // return the quickest response
+    }
+    func request(hostname string) (response string) { /* ... */ }
+    ```
+
+    - Had we used an unbuffered channel, the 2 slower goroutines would have gotten struck trying to send their responses on a channel from which no goroutine will ever receive
+    - This situation called a goroutine leak would be a bug
+    - **Leaked goroutines are not automatically collected**, so it's important to make sure that **goroutines terminate themselves** when no longer needed
+- Unbuffered channels give stronger synchronization guarantees because every send operation is synchronized. With buffered channels, these operations are decoupled
+- `gopl.io/ch8/cake` demo
+## Looping in parallel
+- Problems that consist entirely of subproblems that are completely independent of each other are described as embarrassingly parallel
+- [x] When will the local buffered channel (`ch`) be cleaned (p256)
+- Common and idiomatic pattern for looping in parallel
+
+    ```go
+    // filename 引用类型
+    func makeThumbnails6(filename <-chan string) int64 {
+        sizes := make(chan int64)
+        var wg sync.WaitGroup
+        for f := range filenames {
+            wg.Add(1) // add 1 to counter
+            // worker
+            go func(f string) {
+                defer wg.Done() // minus 1 to the counter, equivalent to Add(-1)
+                thumb, err := thumbnail.ImageFile(f)
+                if err != nil {
+                    log.Println(err)
+                    return
+                }
+                info, _ := os.Stat(thumb)
+                sizes <- info.Size()
+            }(f)
+        }
+        // closer
+        go func() {
+            wg.Wait() // wait until the counter becomes zero
+            close(sizes)
+        }()
+        var total int64
+        for size := range sizes {
+            total += size
+        }
+        return total
+    }
+    ```
+
+## Example: concurrent web crawler
+## Multiplexing with `select`
