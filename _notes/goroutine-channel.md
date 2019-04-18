@@ -52,7 +52,7 @@
     v, ok := <-ch
     ```
 
-    - `ok` is `false` if there are no more values to receive and the channel is closed
+    - `ok` is `false` if there are no more values to receive and the channel is **closed**
 - Only the sender should close a channel, never the receiver
 - Sending on a closed channel will cause a panic
 - The loop `for i := range c` receive values from the channel repeatedly until it is **closed**
@@ -354,7 +354,7 @@
 
     - Each case specifies a communication (a send or receive on some channel) and an associated block of statements
 - A `select` waits until a communication for some case is ready to proceed
-    - It then performs that communication and executes the case's associated statements
+    - It then **performs that communication** and executes the case's associated statements
     - The other communications do not happen
 - A `select` with no cases, `select{}`, waits forever
 - Subtle
@@ -397,6 +397,7 @@
     ```
 
     - Doing it repeatedly is called polling a channel
-- Because **send and receive on a nil channel block forever**, a case in a select statement whose channel is nil is never selected
+- Because **send and receive on a nil channel block forever** (such case cannot not proceed and perform the communication), a case in a select statement whose channel is nil is never selected
     - [ ] This lets us use `nil` to enable or disable cases that correspond to features like handling timeouts or cancellation, responding to other input events, or emitting output
 ## Example: concurrent directory traversal
+- An unlabeled `break` would break out of only the `select`, causing the loop to begin the next iteration
