@@ -337,3 +337,66 @@
 
 ## Example: concurrent web crawler
 ## Multiplexing with `select`
+- `select` statement
+
+    ```go
+    select {
+    case <-ch1:
+        // ...
+    case x := <-ch2:
+        // ...use x...
+    case ch3 <-y:
+        // ...
+    default:
+        // ...
+    }
+    ```
+
+    - Each case specifies a communication (a send or receive on some channel) and an associated block of statements
+- A `select` waits until a communication for some case is ready to proceed
+    - It then performs that communication and executes the case's associated statements
+    - The other communications do not happen
+- A `select` with no cases, `select{}`, waits forever
+- Subtle
+
+    ```go
+    func main() {
+	    ch := make(chan int, 1)
+        for i := 0; i < 10; i++ {
+            select {
+            case x := <-ch:
+                fmt.Println(x) // 0 2 4 6 8
+            case ch <- i:
+            }
+        }
+    }
+    ```
+
+    - `ch`'s buffer size is alternately empty then full, so only one of the cases can proceed, either the send when `i` is even, or the receive when `i` is odd
+    - Increasing the buffer size makes its output nondeterministic
+- If multiple cases are ready, `select` **picks one at random**, which ensures that every channel has an equal chance of being selected
+- The `Tick` function is convenient, but it's appropriate only when the ticks will be needed throughout the lifetime of the application. Otherwise, use this pattern
+
+    ```go
+    ticker := time.NewTicker(1 * time.Second)
+    <-ticker.C // receive from the ticker's channel
+    ticker.Stop() // cause the ticker's goroutine to terminate
+    ```
+
+- A `select` amy have a `default`, which specifies what to do when none of the other communications can proceed immediately
+- A non-blocking receive operation
+
+    ```go
+    select {
+    case <-abort:
+        fmt.Println("Launch aborted!)
+        return
+    default:
+        // Do nothing
+    }
+    ```
+
+    - Doing it repeatedly is called polling a channel
+- Because **send and receive on a nil channel block forever**, a case in a select statement whose channel is nil is never selected
+    - [ ] This lets us use `nil` to enable or disable cases that correspond to features like handling timeouts or cancellation, responding to other input events, or emitting output
+## Example: concurrent directory traversal
