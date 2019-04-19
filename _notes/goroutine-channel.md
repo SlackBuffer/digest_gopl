@@ -383,7 +383,7 @@
     ticker.Stop() // cause the ticker's goroutine to terminate
     ```
 
-- A `select` amy have a `default`, which specifies what to do when none of the other communications can proceed immediately
+- A `select` may have a `default`, which specifies what to do when none of the other communications can proceed immediately
 - A non-blocking receive operation
 
     ```go
@@ -398,6 +398,18 @@
 
     - Doing it repeatedly is called polling a channel
 - Because **send and receive on a nil channel block forever** (such case cannot not proceed and perform the communication), a case in a select statement whose channel is nil is never selected
-    - [ ] This lets us use `nil` to enable or disable cases that correspond to features like handling timeouts or cancellation, responding to other input events, or emitting output
+    - [x] This lets us use `nil` to enable or disable cases that correspond to features like handling timeouts or cancellation, responding to other input events, or emitting output
 ## Example: concurrent directory traversal
 - An unlabeled `break` would break out of only the `select`, causing the loop to begin the next iteration
+## Cancellation
+- There's no way for one goroutine to terminate another directly, since that would leave all its shared variables in undefined states
+- For cancellation, what we need is a reliable mechanism to broadcast an event over a channel so that many goroutines can see it as it occurs and can later see that it has occurred
+- After a channel has been closed and drained of all sent values, subsequent receive operations proceed immediately, yield zero values. Exploit this to create a broadcast mechanism: don't send a value on the channel, close it (and receive operation may proceed)
+- Cancellation involves a trade-off; a quicker response often requires more intrusive changes to program logic
+- Ensuring no expensive operations ever occur after the cancellation event may require updating many places in the code, but most of the benefit can be obtained by checking for cancellation in a few important places
+- When `main` returns, a program exists, so it can be hard to tell a main function that cleans up after itself from one that does not
+    - Handy trick to use when testing: if instead of returning from `main` in the event of cancellation, we execute a call to `panic`, the the runtime will dump the stack of every goroutine in the program
+        - If the main goroutine is the only one left, then it has cleaned up after itself
+        - If other goroutines remain, they may not have been properly cancelled, or perhaps they may have been cancelled but the cancellation takes time; a little investigation may be worthwhile
+    - The panic dump often contains sufficient information to distinguish these cases
+## Example: chat server
