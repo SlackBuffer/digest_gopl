@@ -113,3 +113,171 @@
 - For the same reason, encapsulation also helps to maintain concurrency invariants
 - When using a mutex, make sure that both it and the variables it guards are not exported, whether they are package-level variables or fields of a struct
 # Read/Write mutexes: `sync.RWMutex`
+- `sync.RWMutex` - a multiple readers, single writer lock
+    - A special kind of lock that allows read-only operations to proceed in parallel with each other, but write operations to have fully exclusive access
+
+    ```go
+    var mu sync.RWMutex
+    var balance int
+    func Balance() int {
+        mu.RLock()
+        defer mu.RUnlock()
+        return balance
+    }
+    ```
+
+- `Rlock` can be used only if there are no writes to shared variables in the critical section
+    - In general, we should not assume that logically read-only functions or methods don't also update some variables
+        - A method that appears to be a simple accessor might also increment an internal usage counter, or update a cache so that repeat calls are faster
+    - If in doubt, use an exclusive lock
+- It's only profitable to use an `RWMutex` when most of the goroutine that acquire the lock are readers, and the lock is under contention, that is, goroutines routinely have to wait to acquire it
+- An `RWMutex` requires more complex internal bookkeeping, making it slower than a regular mutex for uncontended locks
+# Memory synchronization
+- Unlike `Deposit`, `Balance` consists only a single operation, so there's no danger of another goroutine executing "in the middle" of it
+- The reason `Balance` needs mutual exclusion, either channel-based or mutex-based
+    1. It's equally important that `Balance` not execute in the middle of some other operation like `Withdraw`
+    2. Synchronization is about more than just the order of execution of multiple goroutines; synchronization also affects memory
+- In a modern computer, there may be dozens of processors, each with its own local cache of the main memory
+- For efficiency, writes to memory are buffered within each processor and flushed out to main memory when necessary
+- They may even be committed to main memory in a different order than they were written by the writing goroutine
+- Synchronization primitives like channel communications and mutex operations cause the processor to flush out and commit **all its accumulated writes** so that the effects of goroutine execution up to that point are guaranteed to be visible to goroutines running on other processors
+
+    ```go
+    var x, y int
+    go func() {
+        x = 1                   // A1
+        fmt.Print("y:", y, " ") // A2
+    }()
+    go func() {
+        y = 1                   // B1
+        fmt.Print("x:", x, " ") // B2
+    }()
+    // these 2 outcomes might come as a surprise
+    // x:0 y:0
+    // y:0 x:0
+    ```
+
+    - Depending on the compiler, CPU, and many other factors, they can happen
+    - Although goroutine A must observe the effect of the write `x=1` before it reads the value of `y`, it does not necessarily observe the write to `y` done by goroutine B
+- **Within a single goroutine**, the effects of each statement are guaranteed to occur in the order of execution; goroutines are **sequentially consistent**
+- But in the absence of explicit synchronization using a channel or mutex, there's no guarantee that events are seen in the same order by all goroutines
+- It's tempting to try to understand concurrency as if it corresponds to some interleaving of the statements of each goroutine, but this is not how a modern compiler or CPU works
+    - Because the assignment and the `Print` refer to different variables, a compiler may conclude that the order of these 2 statements **cannot affect the result**, and **swap** them
+    - If the 2 goroutines execute on different CPUs, each with its own cache, writes by one goroutine are not visible to the other goroutine's `Print` until the caches are synchronized with main memory
+- All these concurrency problems can be avoided by the consistent use of simple, established patterns
+    - Where possible, confine variables to a single goroutine; for other variables, use mutual exclusion
+# Lazy initialization: `sync.Once`
+- It's a good practice to defer an expensive initialization step until the moment it's needed
+- Initializing a variable up front increases the start-up latency of a program and is unnecessary if execution doesn't always reach the part of the program that uses that variable
+- In the absence of explicit synchronization, the compiler and CPU are free to **reorder** accesses to memory in any number of ways, so long as the behavior of each goroutine itself is sequentially consistent
+- Example
+
+    ```go
+    var icon map[string]image.Image
+    func loadIcons() {
+        icons = map[string]image.Image{
+            "spades.png": loadIcon("spades.png"),
+            "hearts.png": loadIcon("hearts.png"),
+            "diamonds.png": loadIcon("diamonds.png"),
+            "clubs.png": loadIcon("clubs.png"),
+        }
+    }
+    // Not concurrency-safe
+    func Icon(name string) image.Image {
+        if icons == nil {
+            loadIcons()
+        }
+        return icons[name]
+    }
+    ``` 
+
+    - > Possible reorder
+
+        ```go
+        var icon map[string]image.Image
+        func loadIcons() {
+            icons = make(map[string]image.Image)
+            icons["spades.png"] = loadIcon("spades.png")
+            icons["hearts.png"] = loadIcon("hearts.png")
+            icons["diamonds.png"] = loadIcon("diamonds.png")
+            icons["clubs.png"] = loadIcon("clubs.png")
+        }
+        ```
+
+        - Consequently, a goroutine finding `icons` to be non-nil should (can) not assume that the initialization of the variable is complete (可能只初始化了部分图片)
+    - Using a mutex
+
+        ```go
+        var mu sync.Mutex // guards icons
+        var icons map[string]image.Image
+        func Icon(name string) image.Image {
+            mu.Lock()
+            defer mu.Unlock()
+            if (icons == nil) {
+                loadIcons()
+            }
+            return icons[name]
+        }
+        ```
+
+        - The cost of enforcing mutually exclusive access to `icons` is that 2 goroutines cannot access the variable concurrently, even once the variable has been safely initialized and will never be modified again
+    - Using a multiple-readers lock
+
+        ```go
+        var mu sync.Mutex // guards icons
+        var icons map[string]image.Image
+        func Icon(name string) image.Image {
+            mu.RLock()
+            if icons != nil {
+                icon := icons[name]
+                mu.RUnlock()
+                return icon
+            }
+            mu.RUnlock()
+
+            mu.Lock()
+            if icon == nil { // must recheck for nil
+                loadIcons()
+            }
+            icon := icons[name]
+            mu.Unlock()
+            return icon
+        }
+        ```
+        - There's no way to upgrade a shared lock to an exclusive one without first releasing the shared lock
+        - Must recheck the `icons` in case another goroutine already initialized it in the interim
+        - This pattern gives us greater concurrency but is complex and thus error-prone
+- The `sync` package provides a specialized solution to the problem of one-time initialization: `sync.Once`
+    - Conceptually, a `Once` consists of a mutex and a boolean variable variable that records whether initialization has taken place
+    - The mutex guards both the boolean and the client's data structures
+    - The sole method, `Do`, accepts the initialization function as its argument
+
+        ```go
+        var loadIconOnce sync.Once // guards icons
+        var icons map[string]image.Image
+        func Icon(name string) image.Image {
+            loadIconOnce.Do(loadIcons)
+            return icons[names]
+        }
+        ```
+
+        - Each call to `Do(loadIcons)` locks the mutex and check the boolean value
+        - In the first call in which the variable is false, `Do` calls `loadIcons` and sets the variables to true
+        - Subsequent calls do nothing, but mutex synchronization ensures that the effects of `loadIcons` on memory (specially, `icons`) become visible to all goroutine
+- Using `sync.Once` this way, we **can avoid sharing variables with other goroutines until they have been properly constructed**
+# The race detector
+- Go runtime and toolchain are equipped with a sophisticated and easy-to-use dynamic analysis tool - the race detector
+- Add `-race` flag to `go build`, `go run`, or `go test`
+    - This causes the compiler to build a modified version of the application or test with additional instrumentation that effectively records all accesses to shared variables that  occurred execution, along with the identity of the goroutine that read or wrote the variable
+    - In addition, the modified program records all synchronization events, such as `go` statements, channel operations, and calls to `(*sync.Mutex).Lock`, `(*sync.WaitGrout).Wait`, and so on
+    - > The complete set of synchronization events is specified by the *The Go Memory Model* document that accompanies the language specification
+- The race detector studies this stream of events, looking for cases in which one goroutine reads or writes a shared variable that was most recently written by a different goroutine **without an intervening synchronization operation**
+    - This indicates a concurrent access to the shared variable, and thus a data race
+- The tool prints a report that includes the identity of the variable, and the stacks of active function calls in the reading goroutine and the writing goroutine
+- The race detector reports all data races that were actually executed. However, it can only detect race conditions that occur during a run; it cannot prove that none will ever occur. For best results, make sure that your tests exercise your packages using concurrency
+# Example: concurrent non-blocking cache
+- This is the problem of memorizing a function, that is, caching the result of a function so that it need be computed only once
+- It's possible to build many concurrent structures using either of the 2 approaches - shared variables and locks, or communicating sequential process - without excessive complexity
+    - It's not always obvious which approach is preferable in a given situation, but it's worth knowing how they correspond
+    - Sometimes switching from one approach to the other can make the code simpler
+# Goroutines and threads

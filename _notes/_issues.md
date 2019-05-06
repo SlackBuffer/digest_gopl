@@ -1,3 +1,4 @@
+- [ ] `go test` 一次通过测试后，再运行测试命令还是得到前一次测试通过的结果，需要重新编辑并保存测试代码才会重新测试
 - [x] go run: cannot run non-main package
 - [x] curl and browser behave differently (Ex1.12.1): additional request '/favicon.ico'
 - [x] Unnamed type
