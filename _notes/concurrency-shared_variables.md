@@ -281,3 +281,49 @@
     - It's not always obvious which approach is preferable in a given situation, but it's worth knowing how they correspond
     - Sometimes switching from one approach to the other can make the code simpler
 # Goroutines and threads
+## Growable stacks
+- Each OS thread has a fixed-size block of memory (often as large as 2MB) for its stack, the work area where it saves the local variables of function calls that are in progress or temporarily suspended while another function is called
+- Changing the fixed size can improve space efficiency and allow more threads to be created, or it can enable more deeply recursive functions, but it cannot do both
+- A goroutine starts life with a small stack, typically 2KB
+- A goroutine' stack holds the local variables of active and suspended function calls, is not fixed; it grows and shrinks as needed
+    - The size limit for a goroutine stack may be as much as 1GB
+## Goroutine scheduling
+- OS threads are scheduled by the OS kernel
+    - Every few milliseconds, a hardware timer interrupts the processor, which causes a kernel function called *scheduler* to be invoked
+    - This function suspends the currently executing thread and saves its registers in memory, looks over the list of threads and decides which one should run next, restores that thread's registers from memory, then resumes the execution of that thread
+- Because OS threads are scheduled by the kernel, passing control from one thread to another requires a full *context switch*, that is, saving the state of one user thread to memory, restoring the state of another of another, and updating the scheduler's data structures
+    - This operation is slow, due to its poor locality and the number of memory accesses required, and has historically only gotten worse as the number of CPU cycles required to access memory has increased
+- The Go runtime contains its own scheduler that uses a technique known as *`m:n scheduling`*, because it multiplexes (or schedules) `m` goroutines on `n` OS threads
+    - The job of the Go scheduler is analogous to that of the kernel scheduler, but it is concerned only with the goroutines of **a single Go program**
+- The Go scheduler is not invoked periodically by a hardware timer, but implicitly by certain Go language constructs. It doesn't need a switch to kernel context, rescheduling a goroutine is much cheaper that rescheduling a thread
+## `GOMAXPROCS`
+- The Go scheduler uses a parameter called `GOMAXPROCS` to determine how many OS threads may be actively executing Go code simultaneously
+    - Its default value is the number of CPUs on the machine
+    - It's the `n` in `m:n scheduling`
+- Goroutines that are sleeping or blocked in a communication do not need a thread at all
+- Goroutines that are blocked in I/O or other system calls or are calling non-Go functions, do need an OS thread, but `GOMAXPROCS` need not account for them
+- Can explicitly control this parameter using the `GOMAXPROCS` environment variable or the `runtime.GOMAXPROCS` function
+- The effect of `GOMAXPROCS`
+
+    ```go
+    for {
+        go fmt.Print(0)
+        fmt.Print(1)
+    }
+    // GOMAXPROCS=1 go run main.go
+    // GOMAXPROCS=2 go run main.go
+    ```
+
+    - In the first run, at most one goroutine was executed at a time. Initially, it was the main goroutine, which prints ones. After a period of time, the Go scheduler put it to sleep and woke up the goroutine that prints zeros, giving it a turn to run on the OS thread
+    - In the second run, there were 2 OS threads available, so both goroutines ran simultaneously, printing digits at about the same rate
+    - > Many factors are involved in goroutine scheduling, and the runtime is constantly evolving, so the results may differ from the ones above
+## Goroutines have no identity
+- In most operating systems and programming language that support multithreading, the current thread has a distinct identity that can be easily obtained as an ordinary value, typically an integer or pointer
+    - This makes it easy to build an abstraction called *thread-local storage*, which is essentially a global map keyed by the thread identity, so that each thread can store and retrieve values independent of other threads
+- Goroutines has no notion of identity that is accessible to the programmer
+- This is by design, since thread-local storage tends to be abused
+    - In a web server implemented in a language with thread-local storage, it's common for many functions to find information about the HTTP request on whose behalf they are currently working by looking in that storage
+    - Just as with programs that rely excessively on global variables, this can lead to an unhealthy "action at a distance" in which the behavior of a function is not determined by its argument alone, but by the identity of the thread in which in runs
+    - Consequently, if the identity of the thread should change - some worker threads are enlisted to help, say - the function misbehaves mysteriously
+- Go encourages a simpler style of programming in which parameters that affect the behavior of a function are explicit
+    - Not only does this make programs easier to read, but it lets us freely assign subtasks of a given function to many different goroutine without worrying about their identity
