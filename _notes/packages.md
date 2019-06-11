@@ -43,7 +43,7 @@
 - By convention, a package's name is the last segment of its import path
     - 2 packages may have the same name even though their import paths necessarily differ
 - 3 major exceptions to the "last segment" convention
-    1. A package defining a command (an executable Go program) always has the `main`, regardless of the package's import path
+    1. A package **defining a command** (an executable Go program) always has the `main`, regardless of the package's import path
         - This is a signal to `go build` that it must invoke the linker to make an executable file
     2. Some files in the directory may have suffix `_test` on their package name if the file name ends with `_test.go`
         - Such a directory may define 2 package: the usual one, plus another one called an external test package
