@@ -269,3 +269,32 @@
         - If a file contains this comment `+build linux darwin` before the package declaration (and its doc comment), `go build` will compile it only when building for Linux or Mac OS X
         - `+build ignore` says never to compile the file
         - For more details see the Build constraints section of the `go/build` package's documentation `go doc go/build`
+## Documenting packages
+- Go style strongly encourages good documentation of package APIs
+- Each declaration of an exported package member and the package declaration itself should be immediately preceded by a comment explaining its purpose and usage
+- Go doc comments are always complete sentences, and the first sentence is usually a summary that starts with the name being declared. Function parameters and other identifiers are mentioned without quotation or markup
+	
+    ```go
+    // Fprintf formats according to a format specifier and writes to w.
+    // It returns the number of bytes and any write error encountered
+    func Fprintf(w io.Writer, format string, a ...interface{})
+    ```
+
+    - The details of `Fprintf`'s formatting are explained in a doc comment associated with the `fmt` package itself
+- A comment immediately preceding a `package` declaration is considered the doc comment for the package as a whole
+    - There must be only one, though it may appear in any file
+    - Longer package comments may warrant a file of their own. This file is usually called `doc.go`
+- Go's convention favor brevity and simplicity in documentation as in all things
+    - Many declarations can be explained in one well-worded sentence, and if the behavior is truly obvious, no comment is needed
+- The `go doc` tool prints the declarations and doc comment of the entity specified on the command line, which may be a package, or a package member, or a method
+	
+    ```bash
+    go doc time
+    go doc time.Since
+    go doc time.Duration.Seconds
+    ```
+
+    - Teh tool does not need complete import paths or correct identifier case
+- `godoc` serves cross-linked HTML pages that provide the same information as `go doc` and much more
+    - `godoc -http=:8080`, `godoc -http :8080`
+        - Its `-analysis=type` and `-analysis=pointer` flags augment the documentation and the source code with the results of advanced static analysis

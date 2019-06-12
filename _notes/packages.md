@@ -103,4 +103,36 @@
     - The `go` tool sorts `.go` files by name before invoking the compiler
 - One package is initialized at a time, in the order of imports in the program, dependencies first
     - So a package `p` importing `q` can be sure that `q` is fully initialized before `p`'s initialization begins
-- Initialization proceeds from the bottom up; the `main` package is the last to be initialized 
+- Initialization proceeds from the bottom up; the `main` package is the last to be initialized
+## Internal packages
+- The `go build` tools treats a package specially if its import path contains a path segment named `internal`. Such packages are called internal packages
+- An internal package may be imported only by another package that is inside the tree rooted at the parent of the `internal` package
+## Querying packages
+- `go list` reports information about available packages
+- In its simplest form, `go list` tests whether a package is present in the workplace and prints its import path if so
+	
+    ```bash
+    go list github.com/go-sql-driver/mysql
+    ```
+
+- `...` matches any substring of a package's import path
+	
+    ```bash
+    # enumerate all the packages within a Go workspace
+    go list ...
+    # within a specific subtree
+    go list gopl.io/ch3/...
+    # related to a particular topic
+    go list ...xml... 
+    ```
+
+- `-json` flag causes `go list` to print the entire record of each package in JSON format - `go list -json hash`
+- `-f` flag lest users customize the output format using the template language of package `text/template`
+	
+    ```bash
+    # prints the transitive dependencies of the `strconv` standard library
+    go list -f '{{join .Deps " "}}' strconv
+
+    # print the direct imports of each package in teh `compress` subtree of the standard library
+    go list -f '{{.ImportPath}} -> {{join .Imports " "}}' compress/...
+    ```
