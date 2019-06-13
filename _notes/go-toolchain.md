@@ -1,5 +1,3 @@
-- [ ] https://golang.org/doc/code.html
-
 # The `go` tool
 - The Go toolchain converts a source program and the things it depends on into instructions in the native machine language of a computer, through a single `go` command with a number of subcommands
 - The `go` tool combines the features of a diverse set of tools into one command set
