@@ -72,4 +72,39 @@
 - This pattern (`storage2/storage_test.go`) can be used to temporarily save and restore all kinds of global variables, including command-line flags, debugging options, and performance parameters; to install and remove hooks that cause the production code to call some test code when something interesting happens; and to coax the production code into rare but important states, such as timeouts, errors, and even specific interleavings of concurrent activities
     - Using global variables in this way is safe only because `go test` does not normally run multiple tests concurrently
 ### External test packages
+- Consider the package `net/url`, which provides a URL parser, and `net/http`, which provides a web server and HTTP client library
+- The higher-level `new/http` depends on the lower-level `net/url`
+- One of the tests in `net/url` is an example demonstrating the interaction between URLs and HTTP client library. In other words, a test of the lower-level package imports the higher-level package
+- Declaring this test function in the `net/url` package would create a cycle in the package import path. Go specification forbids import cycles
+    ![](src/cycle.jpg)
+- We resolve the problem by declaring the test function in an **external** test package, that is, in a file in the `net/url` directory whose package declaration reads `package url_test` (would be `package url` normally)
+- The extra suffix `_test` is a signal to `go test` that it should build an additional package containing just these files and run its tests
+    ![](src/break_cycle.jpg)
+    - It may be helpful to think of this external test package as if it had the import path `net/url_test`, but it cannot be imported under this or any other name
+- By avoiding import cycles, external test packages allow tests, especially integration tests (which test the interaction of several components), to import other packages freely, exactly as an application would
+- We can use the `go list` tool to summarize which Go source files in a package directory are production code, in-package tests, and external tests
+	
+    ```bash
+    # use `fmt` package as an example
+    go list -f={{.GoFiles}} fmt
+    go list -f={{.TestGoFiles}} fmt # [export_test.go]
+    go list -f={{.XTestGoFiles}} fmt
+    ```
+
+    - `GoFiles` is the list of files that contain the production code; these are the files that `go build` will include in the application
+    - `TestGoFiles` is the list of files that also belong to the `fmt` package, but these files, whose names all end in `_test.go`, are included only when building tests
+    - `XTestGoFiles` is the list of files that constitute the external test package, `fmt_test`, so these files must import the `fmt` package on order to use it. They are only included during testing
+- Sometimes an external test package may need privileged access to the internals of the package under test, if for example a white-box test must live in a separate package to avoid an import cycle
+- In such cases, we use a trick: we add declarations to an in-package `_test.go` file to expose the necessary internals to the external test. This file thus offers the test a back door to the package
+    - If the source file exists only for this purpose and contains no tests itself, it's often called `export_test.go`
+- The implementation of the `fmt` package needs the functionality of `unicode.IsSpace` as part of `fmt.Scanf`. To avoid creating an undesirable dependency, `fmt` does not import the `unicode` pacakge and its large tables of data; instead, it contains a simpler implementation, which it calls `isSpace`
+- To ensure that the behavior of `fmt.isSpace` and `unicode.IsSpace` do not drift apart, `fmt` contains a test. It's an external test, and thus it cannot access `isSpace` directly, so `fmt` opens a back door ot it by declaring an exported variable that holds the internal `isSpace` function. This is the entirety of the `fmt` package's `export_test.go` file
+	
+    ```go
+    # /usr/local/go/src/fmt/export_test.go
+    package fmt
+    var IsSpace = isSpace
+    ```
+
+    - This trick can also be used whenever an external test need to use some of the techniques of white-box testing
 ## Benchmark functions
