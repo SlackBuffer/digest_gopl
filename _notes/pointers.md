@@ -2,7 +2,8 @@
 - A pointer value is the address of a variable
     - Not every value has an address, but every variable does
 - A pointer is the location at which a value is stored
-- Pointer can be used to read or update the value of a variable indirectly, without using or even knowing the name of the variable, if indeed it has a name (`new(T)` creates an unnamed variable)
+- Pointer can be used to read or update the value of a variable indirectly, without using or even knowing the name of the variable, if indeed it has a name
+    - `new(T)` creates an unnamed variable
 - `var x int`
     - The expression `&x` yields a pointer to an integer variable, that is, **a type of `*int`** (pronounced "pointer to int")
 
@@ -11,13 +12,13 @@
     p := &x // p, of type *int, points to x
     ```
 
-- Each component of a variable of aggregate type-a field of a struct or an element of an array-is also a variable and thus has an address too
+- Each component of a variable of aggregate type (a field of a struct or an element of an array) is also a variable and thus has an address too
 - Variables are also described as **addressable values**. Expressions that denote variables are the only expressions to which the address-of operator `&` may be applied
 - Pointers in Go are explicitly visible, but there's no pointer arithmetic
 - `&` yields the address of a variable; `*` retrieves the variable that the pointer refers to
 - The zero value for a pointer of any type is `nil`
 - `p != nil` is true if `p` points to a variable
-- Pointers are comparable; 2 pointer are equal if and only if they point to the same variable or both are `nil`
+- Pointers are comparable. 2 pointer are equal if and only if they point to the same variable or both are `nil`
 - Perfectly safe for a function to return the address of a local variable
 
     ```go
@@ -39,7 +40,6 @@
 ```go
 var employeeOfTheMonth *Employee = &dilbert
 employeeOfTheMonth.Position += " (proactive team player)"
-
 // equivalent to
 (*employeeOfTheMonth).Position +=  " (proactive team player)"
 
@@ -49,16 +49,14 @@ func (p *Point) ScaleBy(factor float64) {
     p.Y *= factor
 }
 
-
+// pp is pointer type
 pp := &Point{1, 2}
 // equivalent to
 pp := new(Point) // returns an address
 *pp = Point{1, 2}
 
-
 p := Point{1, 2}
 (&p).ScaleBy(2)
-
 // shorthand
 p.ScaleBy(2)
 ```

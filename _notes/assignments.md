@@ -1,5 +1,5 @@
 - Tuple assignment
-    - All of the right-hand side expressions are evaluated before any of the variables are updated, making this form most useful when some of the variables appear on both sides of the assignment
+    - **All of the right-hand side expressions are evaluated before any of the variables are updated**, making this form most useful when some of the variables appear on both sides of the assignment
 
     ```go
     i, j = j, i // swap values

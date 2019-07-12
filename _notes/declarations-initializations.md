@@ -1,16 +1,16 @@
 # Declaration
 - `var name type = expression`
-    - Either the type or the `= expression` part may be omitted, but not both
+    - Either the `type` or the `= expression` part may be omitted, but not both
         1. If the type is omitted, it's determined by the initializer expression
-        2. If the expression is omitted, the initial value is the zero value for the type
+        2. If `= expression` is omitted, the initial value is the zero value for the type
 - Short variable declaration: `name := expression`
     - Only used within a function, to declare and initialize local variable
     - `:=` is a declaration; `=` is assignment
     - A short variable declaration does not necessarily declare all the variables on its left-hand side
         - If some of them were already declared in ***the same lexical block***, then, for those variables, the short variable declarations act like an **assignment** to those variables
-            - Declarations in an outer block are ignored
+        - Declarations in an outer block are ignored
     - A short variable declaration must declare **at least one new variable**
-    - Short variable declarations with multiple initializer expressions should be used only when they help readability, such as for short and natural groupings like the initialization part of a `for` loop
+    - **Short variable declarations with multiple initializer expressions should be used only when they help readability**, such as for short and natural groupings like the initialization part of a `for` loop
 - A `var` declaration tends to be reserved for local variables that need an explicit type that differs from that of the initializer expression
 
     ```go
@@ -39,7 +39,7 @@
     - Each call to `new` returns a distinct unnamed variable with a different address
         - With **1 exception**: 2 variables whose type carries no information and is therefore of size zero, such as `struct{}` or `[0]int`, may, depending on the implementation, have the same address
     - `new` is a predeclared function, not a keyword, it's possible to redefine the name for something else
-    - `new` is only a syntactic convenience. A variable created with `new` is no different from an ordinary local variable whose address is taken, except there's no need to invent (and declare) a dummy name
+    - `new` is only a **syntactic convenience**
 
         ```go
         // same notion
@@ -52,10 +52,13 @@
         }
         ```
 
-    - It's rarely used, because the most common unnamed variables are of struct, for which the struct literal syntax is more flexible
+        - A variable created with `new` is no different from an ordinary local variable whose address is taken, except there's no need to invent (and declare) a dummy name
+    - It's **rarely used**, because the most common unnamed variables are of **struct**, for which the struct literal syntax is more flexible
 ## Type declaration
 - A `type` declaration defines a new **<mark>named type**</mark> that has the same underlying type as an existing type
     - `type name underlying-type`
+- Type declarations most often appear at package level
+    - Can also appear with blocks
 - The named type provides a way to separate different and perhaps incompatible uses of the same underlying type so that they can't be mixed unintentionally
 
     ```go
@@ -63,19 +66,30 @@
     type Fahrenheit float64
     ```
 
-    - An explicit type conversion (`Celsius(t)`, `Fahrenheit(t)`) is required to convert from a `float64`. `Celsius(t)` and `Fahrenheit(t)` are conversions, not function calls. They don't change the value or representation in any way, but they make the change of meaning explicit
-- Type declarations most often appear at package level. If the name is exported, it's accessible from other packages as well
+    - An explicit type conversion (`Celsius(t)`, `Fahrenheit(t)`) is required to convert from a `float64`
+    - `Celsius(t)` and `Fahrenheit(t)` are **conversions**, not function calls. They don't change the value or representation in any way, but they make the change of meaning **explicit**
 - For every type `T`, there's a corresponding conversion operation `T(x)` that converts the value `x` to type `T`
-- A conversion from one type to another is allowed if both have the same underlying type, or if both are unnamed pointer types that point to variables of the same underlying type
+- A conversion from one type to another is allowed if both have **the same underlying type**, or if both are **unnamed pointer types that point to variables of the same underlying type**
+    - [ ] unnamed type 用什么标识类型转换？
     - If `x` is assignable to `T`, a conversion is permitted but is usually redundant
 - Conversions are also allowed between numeric types, and between string and some slice types
     - These conversions may change the representation of the value
         - Converting a floating-point number to an integer discards any fractional part
         - Converting a string to a `[]byte` slice allocates a copy of the string data
 - The underlying type of a named type determines its structure and representation, and also the set of intrinsic operations it supports, which are the same as if the underlying type had been used directly
-- Comparison operator like `==` and `<` can also be used to compare a value of a named type to another of the same type, or to a value of an unnamed type with the same underlying type
+- Comparison operator like `==` and `<` can also be used to compare a value of a named type to another of the same named type, or to a value of an unnamed type with the same underlying type
+	
+    ```go
+    type A struct {
+		name string
+	}
+	a := A{name: "ho"}
+	b := struct{ name string }{name: "ho"}
+	fmt.Println(a == b)
+    ```
+
 - A named type may provide **notational convenience** if it helps avoid writing out complex types (struct) over and over again
-- Named types also make it possible to define new behaviors for values of the type. These behaviors are expressed as a set of functions associated with the type, called the type's methods
+- Named types also make it possible to **define new behaviors** for values of the type. These behaviors are expressed as a set of functions associated with the type, called the type's methods
 
     ```go
     // Celsius **parameter** c appears before the function name
@@ -94,11 +108,11 @@
 
 ## `init` function
 - Declaration
-    - `func init() { /* ... */}`
-- Any file may contain any number of `init` functions
-- Within each file, `init` functions are automatically executed when the program starts, in the order in which they are declared
+    - `func init() { /* ... */ }`
+- Any file may contain **any number** of `init` functions
+- Within each file, `init` functions are automatically executed when the program starts, **in the order** in which they are declared
 - `init` function cannot be called or referenced, but otherwise they are normal functions
 - Convenient to precompute a table of values
 ---
 - `const`
-    - The value of a constant must be a number, string, or boolean
+    - The value of a constant must be a **number, string, or boolean**
