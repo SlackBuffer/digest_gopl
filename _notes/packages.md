@@ -15,11 +15,11 @@
     - Within the `image` package, the identifier `Decode` refers to a different function than does the same identifier in the `unicode/utf16` package
     - To refer a function from outside its package, we must qualify the identifier to make explicit whether we mean `image.Decode` or `utf16.Decode`
 - Packages let us hide information by controlling which names are visible outside the package, or exported
-    - Exported identifiers start with an upper-case letter
+    - Exported identifiers start with an **upper-case** letter
 - When we change a file, we must recompile the file’s package and potentially all the packages that depend on it
 - Go compilation is notably faster than most other compiled languages, even when built from scratch
     1. All imports must be explicitly listed at the beginning of each source file, so the compiler does not have to read and process an entire file to determines its dependencies
-    2. The dependencies of a package form a directed acyclic graph
+    2. The dependencies of a package form a **directed acyclic graph**
         - Because there are no cycles, packages can be compiled separately and perhaps parallel
     3. The object file for a compiled Go package records export information not just for the package itself, but its dependencies too
         - When compiling a package, the compiler must read one object file for each import but need not look beyond these files
@@ -29,17 +29,17 @@
 - Be descriptive and unambiguous where possible
     - For example, don't name a utility package `util` when a name such as `imageutil` or `ioutil` is specific yet still concise
 - Avoid choosing package names that are commonly used for related local variables, or you may compel the package's clients to use renaming imports
-- Package names usually use the singular form
+- Package names usually use the **singular form**
     - The standard packages `bytes`, `errors`, and `strings` use the plural to avoid hiding the corresponding types and, in the case of `go/types`, to avoid conflict with a keyword
 - Avoid package names that already have other connotations
-- When designing packages, consider how package name and member name of a qualified identifier work together, not hte member name alone
+- When designing packages, consider how package name and member name of a qualified identifier work together, not the member name alone
 - *Single-type* packages such as `html/template` and `math/rand` expose one principal data type plus its methods, and often a `New` function to create instances
 ## Package declaration
 - For packages you intend to share or publish, import paths should be globally unique
     - To avoid conflicts, the import paths of all packages other than those from the standard library should start with the internet domain name of the organization that owns or hosts the package; this also makes it possible to find packages
+- In addition to its import path, each package has a package name, which is short (and not necessarily unique) name that appears in its `package` declaration
 - A package declaration is required at the start of **every Go source file**
     - Its main purpose is to determine the default identifier for that package (called the package name) when it's imported by another package
-- In addition to its import path, each package has a package name, which is short (and not necessarily unique) name that appears in its `package` declaration
 - By convention, a package's name is the last segment of its import path
     - 2 packages may have the same name even though their import paths necessarily differ
 - 3 major exceptions to the "last segment" convention
@@ -126,7 +126,7 @@
     go list ...xml... 
     ```
 
-- `-json` flag causes `go list` to print the entire record of each package in JSON format - `go list -json hash`
+- `-json` flag causes `go list` to print the entire record of each package in JSON format (`go list -json hash`)
 - `-f` flag lest users customize the output format using the template language of package `text/template`
 	
     ```bash

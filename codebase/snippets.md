@@ -13,10 +13,41 @@ f, err := os.Open(name)
 
 
 /*----------------------------------*/
+// loop
+for initialization; condition; post { /* ... */ }
+// "while" loop
+for condition { /* ... */ }
+// infinite loop
+for { /* ... */ }
+
+
+
+/*----------------------------------*/
 // range
 n := 0
 for range "Hello, 世界" {
     n++
+}
+
+
+
+/*----------------------------------*/
+/* strings */
+// +: concatenates
+// `raw_string`
+// Sprintf() formats string
+
+
+
+/*----------------------------------*/
+switch coinflip() { // operand `coinflip()` is optional
+    case "heads":
+        head++ // don't fall through by default
+    case "tails":
+        tails++
+        fallthrough
+    default: // optional
+        fmt.Println("land on edge!")
 }
 
 

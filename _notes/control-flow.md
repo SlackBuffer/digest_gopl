@@ -3,11 +3,11 @@
 - `for`
 
     ```go
-    for initialization; condition; post { //... }
+    for initialization; condition; post { /* ... */ }
     // "while" loop
-    for condition { // ... }
+    for condition { /* ... */ }
     // infinite loop
-    for { // ... }
+    for { /* ... */ }
     ```
 
     - The optional initialization statement is executed before the loop starts. If present, it must be **a simple statement**, that is, a short variable declaration, an increment or assignment, or a function call
@@ -22,12 +22,13 @@
     - A `switch` doesn't have to have an operand (tagless `switch`). Just list the cases, each of which is a boolean expression (equivalent to `switch true`)
 
     ```go
-    switch coinflip() {
+    switch coinflip() { // operand `coinflip()` is optional
         case "heads":
-            head++
+            head++ // don't fall through by default
         case "tails":
             tails++
-        default:
+            fallthrough
+        default: // optional
             fmt.Println("land on edge!")
     }
     ```
