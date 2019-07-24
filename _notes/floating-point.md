@@ -18,13 +18,13 @@
     - The positive and negative infinities represent numbers of excessive magnitude and the result of division by zero
     - `NaN` is the result of such mathematically dubious operations as `0/0` or `Sqrt(-1)`
 - `math.IsNaN` tests whether its argument is a not-a-number value; `math.NaN` returns such a value
-- Any comparison with `NaN` always yields `false` (except `!=`, which is always the negation of `==`)
-    - So don't use `NaN` as a sentinel value in a numeric computation
+- Any comparison with `NaN` always yields `false` (except `!=`, which is always the negation of `==`). So don't use `NaN` as a sentinel value in a numeric computation
 - If a function that returns floating-point result might fail, it's better to report the failure separately
 
     ```go
     // Practice
     func compute() (value float64, ok bool) {
+        // ...
         if failed {
             return 0, false
         }

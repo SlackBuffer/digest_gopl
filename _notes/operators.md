@@ -9,8 +9,8 @@
     ||
     ```
 
+    - Each operator in the **first two** lines of the table has a corresponding assignment operator like `+=`
 - Operators at the same level **associate to the left**, so parentheses may be required for clarity
-- Each operator in the **first two** lines of the table has a corresponding assignment operator like `+=`
 - `+`, `-`, `*`, `/` may be applied to integer, floating-point, and complex numbers
 
     ```go
@@ -19,23 +19,21 @@
     ```
     
 - `%` applies only to integers
-    - The behavior of `%` for negative numbers varies across programming languages
-    - In Go, the sign of the reminder is always the same as the sign of the **dividend** (被取余数)
-- If the result of an arithmetic operation, whether signed or unsigned, has more bits that can be represented in the result type, it's said to overflow. The high-order bits that do not fit are **silently discarded** (the sign may flip)
-- `&&` and `||` have short-circuit behavior: if the answer is already determined by the value of the left operand, the right operand is not evaluated
+    - The behavior of `%` for negative numbers varies across programming languages. In Go, the sign of the reminder is always the same as the sign of the **dividend** (被取余数)
+- If the result of an arithmetic operation, whether signed or unsigned, has more bits that can be represented in the result type, it's said to **overflow**. The high-order bits that do not fit are **silently discarded** (the **sign may flip**)
+- `&&` and `||` have **short-circuit** behavior: if the answer is already determined by the value of the left operand, the right operand is not evaluated
 ## Comparability
-- Two values of the same basic type (booleans, numbers, strings) may be compared using the `==` and `!=` operators
-- Integers, floating-numbers, and strings are **ordered** by comparison operators
+- Two values of the same basic type (booleans, numbers, strings) may be compared using the `==` and `!=` operators. Integers, floating-numbers, and strings are **ordered** by comparison operators
 - For reference types like pointers and channels, the `==` operators tests reference identity, that is, whether the two entities refer to the same thing
 ## Bitwise binary operators
 
-```go
+```
 &   bitwise AND
 |   bitwise OR
 ^   bitwise XOR (bitwise exclusive OR)
 &^  bit clear (AND NOT)
-<<  left shift
->>  right shift
+<<  left shift, multiplication by 2^n
+>>  right shift, division by 2^n
 ```
 
 - The first 4 treat their operands as bit patterns with no concept of arithmetic carry (进位) or sign
@@ -43,14 +41,12 @@
     - The `n` determines the number of bit positions to shift and must be **unsigned**. The `x` operand may be unsigned or signed
     - Left shifts fill the vacated bits with zeros
     - Right shifts of unsigned numbers fill the vacated bits with zeros
-    - Right shifts of signed numbers fill the vacated bits with copies of the **sign bit**
-        - For this reason, it's important to use unsigned arithmetic when you're treating an integer as a bit pattern
+    - Right shifts of signed numbers fill the vacated bits with copies of the **sign bit**. For this reason, it's important to use unsigned arithmetic when you're treating an integer as a bit pattern
     - > `x` and `n` don't have to of the same type
 # Unary operators
 - `+`: unary positive (no effect)
 - `-`: unary negation
 - For integers, `+x` is a shorthand for `0+x`; `-x` is a shorthand for `0-x`
 - For floating-point and complex numbers, `+x` is just `x` and `-x` is the negation of `x`
-- `^`: bitwise negation or complement
-    - Return a value with each bit in its operand inverted
+- `^`: bitwise negation or complement. Returns a value with each bit in its operand inverted
 - `%c`, `%q` (with single quotes ), `%d` (numeric value) print runes

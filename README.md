@@ -9,6 +9,12 @@
     - [x] visibility-scope-lifetime
     - [x] strings_Unicode_UTF-8_byte-slice
     - [x] packages
+    - [x] integers
+    - [x] floating-point
+    - [x] booleans
+    - [x] complex-numbers
+    - [x] operators
+    - [x] constants
 
 
 Continues at p348

@@ -1,5 +1,5 @@
 # Constants
-- Constants are expressions whose value is known to the compiler and whose evaluation is guaranteed to occur at compile time, not at run time
+- Constants are expressions whose value is known to the compiler and whose evaluation is guaranteed to occur at **compile time**, not at run time
 - The underlying type of every constant is a **basic type**: boolean, string, or number
 - `const`
 - Prevents accidental or nefarious changes of value during program execution
@@ -10,9 +10,29 @@
 - The result of all arithmetic, logical, and comparison operations applied to constant operands are themselves constants, as are the results of conversions and calls to certain built-in functions such as `len`, `cap`, `real`, `imag`, `complex`, and `unsafe.Sizeof`
 - Since their values are known to the compiler, constant expressions may appear in types, specifically as the length of an array type
 - A constant declaration may specify a type as well as a value, but in the absence of an explicit type, the type is inferred from the expression on the right-hand side
-    - `time.Duration`, `time.Minute`
-        - > Underlying type is `int64`
-- When a sequence of constants is declared as a group, the right-hand side expression may be omitted for all but the first of the group, implying that the previous expression and its type should be used again
+	
+    ```go
+    const noDelay time.Duration = 0
+    const timeout = 5 * time.Minute
+    fmt.Printf("%T %[1]v\n", noDelay) // "time.Duration 0"
+    fmt.Printf("%T %[1]v\n", timeout) // "time.Duration 5m0s
+    fmt.Printf("%T %[1]v\n", time.Minute) // "time.Duration 1m0s"
+    ```
+
+    - `time.Duration`'s underlying type is `int64`. `time.Minute` is a constant of `time.Duration`
+    	
+        ```go
+        const (
+            Nanosecond  Duration = 1
+            Microsecond          = 1000 * Nanosecond
+            Millisecond          = 1000 * Microsecond
+            Second               = 1000 * Millisecond
+            Minute               = 60 * Second
+            Hour                 = 60 * Minute
+        )
+        ```
+    
+- When a sequence of constants is declared as a group, the right-hand side expression may be omitted for all **but the first** of the group, implying that the previous expression and its type should be used again
 
     ```go
     const (
@@ -26,7 +46,7 @@
 
 ## The constant generator `iota`
 - A const declaration may use the constant generator `iota`, which is used to create a sequence of related values without spelling out each one explicitly
-- In a `const` declaration, the value of `iota` begins at zero and increments by one for each item in the sequence
+- In a `const` declaration, the value of `iota` **begins at zero** and increments by one for each item in the sequence
 ## Untyped constants
 - Although a constant can have any of the basic data types like `int` or `float64`, including named basic types like `time.Duration`, many constants are not committed to a particular type
 - The compiler represents these **uncommitted constants** with much greater numeric precision than values of basic types, and arithmetic on them is more precise than machine arithmetic; you may assume at least 256 bits of precision
@@ -41,11 +61,11 @@
     var z complex128 = math.Pi
     ```
 
-    - ZiB and YiB are too big to store in any integer variable
+    - `ZiB` and `YiB` are too big to store in any integer variable
     - `math.Pi` may be used wherever any floating-point or complex is needed. If `math.Pi` had been committed to specific type such as `float64`, the result would not be as precise, and type conversions would be required to use it when a `float32` or `complex128` is wanted
 - For literals, syntax determines flavor
     - `0`, `0.0`, `0i`, and `\u0000` all denote constants of the same value but different flavors: untyped integer, untyped floating-point, untyped complex, and untyped rune
-    - `true` and `false` are untyped booleans and string literals are untyped strings
+    - `true` and `false` are untyped booleans; string literals are untyped strings
 - The choice of literal may affect the result of a constant division expression
 
     ```go
@@ -55,8 +75,7 @@
     fmt.Println(5.0 / 9.0 * (f - 32)) // 100; 5.0/9.0 is an untyped float
     ```
 
-- Only constants can be untyped
-- When an untyped constant is assigned to variable, or appears on the right-hand side of a variable declaration with an explicit type, the constant is implicitly converted to the type of that variable if possible
+- Only constants can be untyped. When an untyped constant is assigned to variable, or appears on the right-hand side of a variable declaration with an explicit type, the constant is **implicitly converted** to the type of that variable if possible
 - Whether implicit or explicit, converting a constant from one type to another requires that the target type can represent the original value. Rounding is allowed for real and complex floating-point numbers
 
     ```go
@@ -83,3 +102,10 @@
     ```
 
 - These defaults are particularly important when converting an untyped constant to an **interface** value since they determine its dynamic type
+	
+    ```go
+    fmt.Printf("%T\n", 0) // "int"
+    fmt.Printf("%T\n", 0.0) // "float64"
+    fmt.Printf("%T\n", 0i) // "complex128"
+    fmt.Printf("%T\n", '\000') // "int32" (rune)
+    ```
