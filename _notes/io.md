@@ -31,9 +31,7 @@
         ```
 
 - `func Sprintf(format string, a ...interface{}) string`
-    - Sprintf formats according to a format specifier
-    - Returns the resulting string
-    - Can be used to convert number into string
+    - `Sprintf` formats according to a format specifier and returns the resulting string
 - `log.Fatal`
 	- `log.Fatal(http.ListenAndServe("localhost:8000", nil))`
 - `log.Print`

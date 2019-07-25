@@ -19,3 +19,4 @@
 - [ ] So a declaration may refer to itself (like functions, types!) or to another that follows it, letting us declare recursive or [ ] mutually recursive types and functions
 - [ ] `^`: bitwise XOR (bitwise exclusive OR); `&^`: bit clear (AND NOT)
 - [x] Print �: `fmt.Println(string(1234567))`
+- [ ] object files (`.a`?)

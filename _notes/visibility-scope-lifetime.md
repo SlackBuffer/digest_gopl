@@ -49,7 +49,7 @@
         - The second `if` statement is **nested** within the first, so variables declared within the first statement's initializer are visible within the second
     - There's a block for the condition and a block for each case body
 - Function and other package-level entities may be declared in any order
-- At the package level, the order in which declarations appear has no effect on their scope. So a declaration may refer to itself (like functions, types!) or to another that follows it, letting us declare recursive or [ ] mutually recursive types and functions
+- At the **package level**, **the order in which declarations appear has no effect on their scope**. So a declaration may refer to itself (like functions, types!) or to another that follows it, letting us declare recursive or [ ] mutually recursive types and functions
     - The compiler will report an error if a constant or variable declaration refers to itself
 # Visibility
 - A entity whose name begins with an upper-case letter (**exported**)is visible and accessible outside its own package and may be referred to by other parts of the program

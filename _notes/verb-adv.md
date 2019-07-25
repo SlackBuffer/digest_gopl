@@ -1,6 +1,5 @@
-- The `fmt` package treats types with a `String` method specially so that values of complicated types can display themselves in a user-friendly manner
-    - Instead of printing the raw representation of the value, `fmt` calls the `String` method
-        - > The mechanism relies on interfaces and type assertions
+- The `fmt` package treats types with a `String` method specially so that values of complicated types can display themselves in a user-friendly manner. Instead of printing the raw representation of the value, `fmt` calls the `String` method
+    - The mechanism relies on interfaces and type assertions
 # Verbs
 - https://golang.org/pkg/fmt/
 
@@ -39,9 +38,6 @@
    2. `%e` (exponent)
    3. `%f` (no exponent)
     - All 3 verbs allow field width and numeric precision to be controlled
-- Space
-    1. put spaces between bytes printing strings or slices in hex (`% x`, `% X`)
-    <!-- 2. leave a space for elided sign in numbers (`% d`) -->
 - `%U`
     - Unicode format
 - `-`: 字段左对齐
