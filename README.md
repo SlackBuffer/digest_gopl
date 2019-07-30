@@ -22,6 +22,13 @@
     - [x] templates
     - [x] idiomatic
     - [x] go-toolchain
+    - [x] array
+    - [x] slice
+    - [x] maps
+    - [x] structs
+    - [x] JSON
+    - [ ] functions
+    - [ ] methods
 
 
 Continues at p348

@@ -23,8 +23,7 @@
 
     - If `...` appears in place of the length, the array length is determined by the number of initializers
     - Specify a list of index and value pairs and indices can appear in any order and some may be omitted
-- The size of an array is part of its type
+- The **size of an array is part of its type**
 - The size must be a constant expression, that is, an expression whose value can be computed as the program is being **compiled**
-- If an array's element is comparable then the array type is comparable too
-- `==` reports whether all corresponding elements are equal
-- Arrays are passed by value, not by reference
+- If an array's element is comparable then the array type is comparable too. `==` reports whether all corresponding elements are equal
+- Arrays are **passed by value**, not by reference
