@@ -129,7 +129,7 @@
     - The **first argument that doesn't end in `.go`** is assumed to be the beginning of the list arguments to the Go executable
 - By default, the `go build` command builds the requested package and all its dependencies, then throws away all the compiled code except the final executable, if any
 - The `go install` command is very similar to `go build`, except it **saves the compiled code for each package and command** instead of throwing it away
-    - Compiled packages are saved beneath the `GOPATH/pkg` directory corresponding to the `src` directory in which the source resides, and command executables are saved in the `$GOPATH/bin` directory (Many users put `$GOPATH/bin` on their executable search path). **Thereafter**, `go build` and `go install` do not run the compiler for those packages and commands if they have not changed, making subsequent builds much faster
+    - Compiled packages are saved beneath the `$GOPATH/pkg` directory corresponding to the `src` directory in which the source resides, and command executables are saved in the `$GOPATH/bin` directory (Many users put `$GOPATH/bin` on their executable search path). **Thereafter**, `go build` and `go install` do not run the compiler for those packages and commands if they have not changed, making subsequent builds much faster
     - For convenience, `go build -i` installs the packages that are dependencies of the build target
 - Since compiled packages vary by platform and architecture, `go install` saves them beneath a subdirectory whose name incorporates the value of the `GOOS` and `GOARCH` environment variables
     - For example, on a Mac the `golang.org/x/net/html` package is compiled and installed in the file `golang.org/x/net/html.a` under `$GOPATH/pkg/darwin_amd64`

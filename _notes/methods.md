@@ -1,4 +1,4 @@
-- An **object** is simply a value or variable that has methods
+- An *object* is simply a value or variable that has methods
 - A method is a **function** associated with a (**any**) named type
 - An object-oriented program is one that uses methods to express the properties and operations of each data structures so that **clients need not access the object's representation directly**
 
@@ -9,8 +9,7 @@
     ```
 
 # Method declarations
-- A method is declared with a variant of the ordinary function declaration in which **an extra parameter appears before the function name**
-- The parameter attaches the function to the type of that parameter
+- A method is declared with a variant of the ordinary function declaration in which **an extra parameter appears before the function name**. The parameter attaches the function to the type of that parameter
 
     ```go
     func Distance(p, q Point) float64 {
@@ -22,17 +21,15 @@
 	fmt.Println(p.Distance(q))
     ```
 
-    - The extra **parameter** `p` is called the method's **receiver**, a legacy from early object-oriented languages that describes calling a method as "sending a message to an object"
-- In Go, we don't use a special name like `this` or `self` for the receiver; we choose receiver names just as we would for any other parameter
-    - Since the receiver name will be frequently used, it's a good idea to choose something short and to be consistent across methods
-    - A common choice is **the first letter of the type name**
+    - The extra **parameter** `p` is called the method's *receiver*, a legacy from early object-oriented languages that describes calling a method as **"sending a message to an object"**
+- In Go, we don't use a special name like `this` or `self` for the receiver; we choose receiver names just as we would for any other parameter. Since the receiver name will be frequently used, it's a good idea to choose something short and to be consistent across methods. A common choice is **the first letter of the type name**
 - In a method call, the receiver argument appears before the methods name. This parallels the declaration, in which the receiver **parameter** appear appears before the method name
 - There's no conflict between the 2 declarations of functions called `Distance`
     - The first declares a package-level function `geometry.Distance`
     - The second declares a method of the type `Point`, so its name is `Point.Distance`
-- The expression `p.Distance` is called a **selector**, because it selects the appropriate `Distance` method for the receiver `p` of type `Point`
+- The expression `p.Distance` is called a *selector*, because it selects the appropriate `Distance` method for the receiver `p` of type `Point`
 - Selectors are also used to select fields of struct types, as in `p.X`
-- Since methods and fields inhabit the same name space, declaring a method `X` on the struct type `Point` would be ambiguous and the compiler will reject it
+- Since **methods and fields inhabit the same name space**, declaring a method `X` on the struct type `Point` would be ambiguous and the compiler will reject it
 - Since each type has its own name space for methods, we can use the name `Distance` for other methods so long as they belong to different types
 
     ```go
@@ -53,10 +50,19 @@
     - Go allows methods to be associated with any type
     - It's often convenient to define additional behaviors for simple types such as numbers, strings, slices, maps, and sometimes even functions
 - Methods may be declared on any named type **defined in the same package**, so long as its underlying type is neither a **pointer** nor an **interface**
-    - You cannot declare a method with a receiver whose type is defined in another package (which **includes the built-in types** such as `int`)
+    - [ ] 不能为底层类型是指针或接口的命名类型声明方法
+        - > To **avoid ambiguities**, method declarations are not permitted on named types that are themselves pointer types
+- You cannot declare a method with a receiver whose type is defined in another package (which **includes the built-in types** such as `int`)
 - All methods of a given type must have unique names, but different types can use the same name for a method; there's no need to qualify function names (for example, `PathDistance`) to disambiguate
-- The first benefit to using methods over ordinary functions: methods names can be shorter
-    - The benefit is magnified for calling originating outside the package, since they can use the shorter name and omit the package name
+- The first benefit to using methods over ordinary functions: methods names can be shorter. The benefit is magnified for calling originating outside the package, since they can use the shorter name and omit the package name
+
+    ```go
+    import "gopl.io/ch6/geometry"
+    perim := geometry.Path{{1, 1}, {5, 1}, {5, 4}, {1, 1}}
+    fmt.Println(geometry.PathDistance(perim)) // "12", standalone function
+    fmt.Println(perim.Distance()) // "12", method of geometry.Path
+    ```
+
 # Methods with a pointer receiver
 - Because calling a function makes a copy of each argument value, if a function needs to **update a variable**, or if an argument is so **large** that we wish to avoid copying it, we must pass the address of the variable using a pointer
 - The same goes for methods that need to update the receiver variable: we **attach them to the pointer type**
@@ -80,9 +86,8 @@
 
     - The name of this method is `(*Point).ScaleBy`. Parentheses are necessary
 - In general, all methods on a given type should have either value or pointer receivers, but not a mixture of both
-- In a realistic program, **convention** dictates that if any method of `Point` has a pointer receiver, the **all methods** should have a pointer receiver, even ones that don't strictly need it
-- **Named type and pointers to them** are the only types that may appear in a receiver declaration
-- To avoid ambiguities, method declarations are not permitted on named types that are themselves pointer types
+    - In a realistic program, **convention** dictates that if any method of `Point` has a pointer receiver, the **all methods** should have a pointer receiver, even ones that don't strictly need it
+- **Named type and pointers to them** are the only types that may appear in a receiver declaration. Furthermore, to **avoid ambiguities**, method declarations are not permitted on named types that are themselves pointer types
 
     ```go
     type P *int
@@ -92,19 +97,20 @@
 
 - If the `p` is a variable of type `Point` but the method requires a `*Point` receiver, we can use shorthand `p.ScaleBy(2)`. The compiler will perform an implicit `&p` on the variable
     - This works only for variables, including struct fields like `p.X` and array or slice elements like `perim[0]`
-- We cannot call a `*Point` method method on a non-addressable `Point` receiver, because there's **no way to obtain the address of a temporary value**
+- We cannot call a `*Point` method method on a **non-addressable** `Point` receiver, because there's **no way to obtain the address of a temporary value**
 
     ```go
     Point{1, 2}.ScaleBy(2) // compile error: can't take address of Point literal
     ```
 
-- We can call a `Pointer` method with a `*Point` receiver, because there's a way to obtain the value from the address: just load the value pointed to by the receiver. The compiler inserts an implicit `*` operator for us
+- We can call a `Point` method with a `*Point` receiver, because there's a way to obtain the value from the address: just load the value pointed to by the receiver. The compiler inserts an implicit `*` operator for us
 
     ```go
     p := Point{1, 2}
     pptr := &p
-    pptr.Distance(q)
     (*pptr).Distance(q)
+    // shorthand
+    pptr.Distance(q)
     ```
 
 - Functions with a pointer argument must take a pointer; methods with pointer receivers take either a value or a pointer as the receiver when they are called
@@ -151,9 +157,9 @@
     }
     ```
 
-- When you define a type whose methods allow `nil` as a receiver value, it's worth pointing this out explicitly in its documentation comment
-- In the final call to `Get` of urlvalue, the nil receiver behaves like an empty map
-    - We could equivalent have written it as `Values(nil).Get("item")`, but `nil.Get("item")` would not compile because **the type of `nil`** has not been determined
+    - When you define a type whose methods allow `nil` as a receiver value, it's worth pointing this out explicitly in its documentation comment
+- In the final call to `Get` of ch6/urlvalues, the nil receiver behaves like an empty map
+    - We could equivalent have written it as `Values(nil).Get("item")`. `nil.Get("item")` would not compile because **the type of `nil`** has not been determined
     - Because `url.Values` is a map type and a map refers to its key/value pairs **indirectly**, any updates and deletions that `url.Values.Add` makes to the map elements are visible to the caller
     - However, as with ordinary functions, any changes a method makes to the reference itself, like setting it to `nil` or making it refer to a different map data structure, will not be reflected in the caller
 # Composing types by struct embedding
@@ -220,6 +226,7 @@
         mu.Unlock()
         return v
     }
+
     // functionally equivalent to
     var cache = struct {
         sync.Mutex
@@ -235,11 +242,10 @@
     }
     ```
 
-    - The new variable gives more expressive names to the variables related to the cache. Promoting allows us to lock the `cache` with a self-explanatory syntax
+    - The new variable gives more expressive names to the variables related to the `cache`. Because the `sync.Mutex` field is embedded within it, its `Lock` and `Unlock` methods are promoted to the unnamed struct type,  allowing us to lock the `cache` with a self-explanatory syntax
 # Methods values and expressions
 - It's possible to separate the operations of selecting and calling a method
-    - The selector `p.Distance` yields a method value, a function that binds a method (`Point.Distance`) to a specific value `p`
-    - This function can then be invoked without a receiver value; it needs only the non-receiver arguments
+    - The selector `p.Distance` yields a method value, a function that binds a method (`Point.Distance`) to a specific value `p`. This function can then be invoked without a receiver value; it needs only the non-receiver arguments
 - Method values are useful when a package's API calls for a function value, and the client's desired behavior for that function is to call a method on a specific receiver
 
     ```go
@@ -247,10 +253,11 @@
     func (r *Rocket) Launch() { /* ... */ }
     r := new(Rocket)
     time.AfterFunc(10 * time.Second, func() { r.Launch() })
+    // the method value syntax is shorter
     time.AfterFunc(10 * time.Second, r.Launch )
     ```
 
-- Method expression
+- A method expression, written `T.f` or `(*T).f` where `T` is a type, yields a function value with a regular **first parameter taking the place of the receiver**, so it can be called in the usual way
 
     ```go
     type Point struct { X, Y float64 }
@@ -265,6 +272,7 @@
             op = Point.Sub
         }
         for i := range path {
+            // Call either path[i].Add(offset) or path[i].Sub(offset).
             path[i] = op(path[i], offset)
         }
     }
@@ -273,10 +281,9 @@
 # Example: bit vector type
 - A bit vector uses a slice of unsigned integer values or "words", each bit of which represents a possible element of the set
 - The set contains `i` if `i`-th bit is set
-- The `fmt` package treats types with a `String` method specially so that values of complicated types can display themselves in a user-friendly manner
-    - Instead of printing the raw representation of the value, `fmt` calls the `String` method
-        - > The mechanism relies on interfaces and type assertions
-- Intset
+- The `fmt` package treats types with a `String` method specially so that values of complicated types can display themselves in a user-friendly manner. Instead of printing the raw representation of the value, `fmt` calls the `String` method
+    - > The mechanism relies on interfaces and type assertions
+- ch6/intset
 
     ```go
     var x IntSet
@@ -292,8 +299,7 @@
     2. The compiler inserts the implicit `&` operation, giving us a pointer, which has the `String` method
     3. `IntSet` **value** does not have a `String` method; prints the representation of the struct instead
 # Encapsulation
-- A variable or method of an object is said to be encapsulated if it's inaccessible to clients of the object
-- Encapsulation, sometimes called information hiding, is a key aspect of object-oriented programming
+- A variable or method of an object is said to be *encapsulated* if it's inaccessible to clients of the object. Encapsulation, sometimes called *information hiding*, is a key aspect of object-oriented programming
 - Consequences of Go's name-based visibility control mechanism
    1. To encapsulate an object, we must use struct
         - Make the struct variable capitalized and its protected fields uncapitalized (avoid direct manipulation)
@@ -303,9 +309,8 @@
    1. Clients cannot directly modify the object's variables, one need inspect fewer statements to understand the possible values of those variables
    2. Hiding implementation details prevents clients from depending on things that might change, which gives the designer greater freedom to evolve the implementation without breaking API compatibility
    3. Prevents clients from setting an object's variables arbitrarily
-- Functions that merely access or modify internal values of a type, such as the methods of the `Logger` type from `log` package, are called getters and setters
-- When naming a getter method, we usually omit the `Get` prefix
-- This preference for brevity extends to all methods, not just field accessors, and to other redundant prefixes as well, such as `Fetch`, `Find`, and `Lookup`
-- Go style does not forbid exported fields. Once exported, a field cannot be unexported without an incompatible change to the API
-- Encapsulation is not always desirable
-    - By revealing its representation as an `int64` number o nanoseconds, `time.Duration` lets us use all the usual arithmetic and comparison operations with durations, and even to define constants of this type
+- Functions that merely access or modify internal values of a type, such as the methods of the `Logger` type from `log` package, are called *getters* and *setters*
+- When naming a getter method, we usually omit the `Get` prefix. This preference for brevity extends to all methods, not just field accessors, and to other redundant prefixes as well, such as `Fetch`, `Find`, and `Lookup`
+- Go style does not forbid exported fields. Once exported, a field cannot be unexported without an incompatible change to the API, so the initial choice should be deliberate and should consider the complexity of the invariants that must be maintained, the likelihood of future changes, and the quantity of client code would be affected by a change
+- Encapsulation is not always desirable. By revealing its representation as an `int64` number of nanoseconds, `time.Duration` lets us use all the usual arithmetic and comparison operations with durations, and even to define constants of this type
+- [ ] 指针语法糖整理

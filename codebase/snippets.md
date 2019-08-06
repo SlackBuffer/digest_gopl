@@ -66,7 +66,7 @@ switch coinflip() {
 /*----------------------------------*/
 /* pointer */
 var employeeOfTheMonth *Employee = &dilbert
-employeeOfTheMonth.Position += " (proactive team player)" // [ ] shorthand
+employeeOfTheMonth.Position += " (proactive team player)" // shorthand
 // equivalent to
 (*employeeOfTheMonth).Position +=  " (proactive team player)"
 
@@ -85,7 +85,7 @@ pp := new(Point) // returns an address
 
 p := Point{1, 2}
 (&p).ScaleBy(2)
-p.ScaleBy(2) // [ ] shorthand
+p.ScaleBy(2) // shorthand
 
 
 

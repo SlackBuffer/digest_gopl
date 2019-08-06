@@ -1,3 +1,7 @@
+- *Parameters* are local variables whose value or *arguments* are supplied by the caller
+- An *object* is simply a value or variable that has methods
+- 调用方法时，编译器会自动为 receiver 做恰当的值-指针类型的隐式转换，所以可以怎么写简洁怎么来（receiver argument 和 receiver parameter 不一致，分别为 `*T` 和 `T` 中的任意一个）
+---
 - [ ] https://golang.org/doc/effective_go.html
 - [ ] https://golang.org/doc/code.html
 - Review (32)
@@ -27,8 +31,8 @@
     - [x] maps
     - [x] structs
     - [x] JSON
-    - [ ] functions
-    - [ ] methods
+    - [x] functions
+    - [x] methods
 
 
 Continues at p348
