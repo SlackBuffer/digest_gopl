@@ -1,5 +1,5 @@
-// extracts and prints the text found beneath certain elements in an XML document tree
-// finishes in a single pass over the input without  ever materializing the tree
+// Extract and print the text found beneath certain elements in an XML document tree.
+// Do its job in a single pass over the input without ever materializing the tree.
 package main
 
 import (
@@ -15,6 +15,8 @@ func main() {
 
 	var stack []string // stack of element names
 
+	// The API guarantees that the sequence of StartElement and EndElement tokens will be properly matched, even in ill-formated documents.
+	// Comments are ignored.
 	for {
 		tok, err := dec.Token()
 		if err == io.EOF {
@@ -28,7 +30,8 @@ func main() {
 			stack = append(stack, tok.Name.Local) // push
 		case xml.EndElement:
 			stack = stack[:len(stack)-1] // pop
-		case xml.CharData:
+		case xml.CharData: // e.g., <p>CharData</p>
+			// prints the text only if the stack contains all the elements named by the command-line arguments, in order.
 			if containsAll(stack, os.Args[1:]) {
 				fmt.Printf("%s: %s\n", strings.Join(stack, " "), tok)
 			}
@@ -36,7 +39,7 @@ func main() {
 	}
 }
 
-// reports whether x contains the elements of y, in order
+// reports whether x contains the elements of y, in order.
 func containsAll(x, y []string) bool {
 	for len(y) <= len(x) {
 		if len(y) == 0 {

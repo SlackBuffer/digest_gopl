@@ -33,6 +33,10 @@
     - [x] JSON
     - [x] functions
     - [x] methods
+    - [x] interfaces
+    - [ ] goroutine-channel
+    - [ ] concurrency-shared_variables
+    - [ ] testing
 
 
 Continues at p348

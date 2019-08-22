@@ -313,4 +313,3 @@
 - When naming a getter method, we usually omit the `Get` prefix. This preference for brevity extends to all methods, not just field accessors, and to other redundant prefixes as well, such as `Fetch`, `Find`, and `Lookup`
 - Go style does not forbid exported fields. Once exported, a field cannot be unexported without an incompatible change to the API, so the initial choice should be deliberate and should consider the complexity of the invariants that must be maintained, the likelihood of future changes, and the quantity of client code would be affected by a change
 - Encapsulation is not always desirable. By revealing its representation as an `int64` number of nanoseconds, `time.Duration` lets us use all the usual arithmetic and comparison operations with durations, and even to define constants of this type
-- [ ] 指针语法糖整理

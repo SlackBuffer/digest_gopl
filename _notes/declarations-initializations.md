@@ -58,7 +58,7 @@
 - A `type` declaration defines a new **<mark>named type**</mark> that has the same underlying type as an existing type
     - `type name underlying-type`
 - Type declarations most often appear at package level
-    - Can also appear with blocks
+    - Can also appear within blocks
 - The named type provides a way to separate different and perhaps incompatible uses of the same underlying type so that they can't be mixed unintentionally
 
     ```go
@@ -76,7 +76,7 @@
     - These conversions may change the representation of the value
         - Converting a floating-point number to an integer discards any fractional part
         - Converting a string to a `[]byte` slice allocates a copy of the string data
-- The underlying type of a named type determines its structure and representation, and also the set of intrinsic operations it supports, which are the same as if the underlying type had been used directly
+- The underlying type of a named type **determines** its structure and representation, and also the set of intrinsic operations it supports, which are the same as if the underlying type had been used directly
 - Comparison operator like `==` and `<` can also be used to compare a value of a named type to another of the same named type, or to a value of an unnamed type with the same underlying type
 	
     ```go

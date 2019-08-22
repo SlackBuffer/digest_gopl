@@ -26,6 +26,8 @@ func TestEval(t *testing.T) {
 			fmt.Printf("\n%s\n", test.expr)
 			prevExpr = test.expr
 		}
+
+		// Parse handles the recursive part
 		expr, err := Parse(test.expr)
 		if err != nil {
 			t.Error(err) // parse error
@@ -40,4 +42,25 @@ func TestEval(t *testing.T) {
 	}
 }
 
-// go test -v exercises-the_go_programming_language/ch7/eval
+// go test -v digest_gopl/ch7/eval
+
+/*
+=== RUN   TestCoverage
+--- PASS: TestCoverage (0.00s)
+=== RUN   TestEval
+
+sqrt(A / pi)
+        map[A:87616 pi:3.141592653589793] => 167
+
+pow(x, 3) + pow(y, 3)
+        map[x:12 y:1] => 1729
+        map[x:9 y:10] => 1729
+
+5 / 9 * (F - 32)
+        map[F:-40] => -40
+        map[F:32] => 0
+        map[F:212] => 100
+--- PASS: TestEval (0.00s)
+PASS
+ok      digest_gopl/ch7/eval    0.008s
+*/

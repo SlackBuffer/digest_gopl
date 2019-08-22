@@ -1,7 +1,7 @@
 package main
 
 import (
-	"exercises-the_go_programming_language/ch7/tempconv1"
+	"digest_gopl/ch7/tempconv1"
 	"flag"
 	"fmt"
 )

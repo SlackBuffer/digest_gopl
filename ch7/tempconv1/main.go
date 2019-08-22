@@ -1,16 +1,17 @@
 package tempconv1
 
 import (
-	"exercises-the_go_programming_language/ch2/tempconv"
+	"digest_gopl/ch2/tempconv"
 	"flag"
 	"fmt"
 )
 
-// get `String` from tempconv.Celsius for free
+// get String from tempconv.Celsius for free
 type celsiusFlag struct {
 	tempconv.Celsius
 }
 
+// Set parses its string argument and updates the flag value
 func (f *celsiusFlag) Set(s string) error {
 	var unit string
 	var value float64
@@ -28,8 +29,8 @@ func (f *celsiusFlag) Set(s string) error {
 	return fmt.Errorf("invalid temperature %q", s)
 }
 
-// defines a Celsius flag with the specified name, default value,
-// and usage, and returns the address of the flag variable
+// CelsiusFlag defines a Celsius flag with the specified name, default value,
+// and usage, and returns the address of the flag variable.
 // the flag argument must have a quantity and a unit, e.g., 100C
 func CelsiusFlag(name string, value tempconv.Celsius, usage string) *tempconv.Celsius {
 	// init the default value

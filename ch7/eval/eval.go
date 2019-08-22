@@ -1,3 +1,4 @@
+// Package eval is an evaluator for simple arithmetic expressions
 package eval
 
 import (
@@ -11,13 +12,22 @@ type Expr interface {
 	// Eval returns the value of this Expr in the environment env
 	Eval(env Env) float64
 
-	// reports errors in this Expr and adds its Vars to the set
+	// Check reports errors in this Expr and adds its Vars to the set
 	Check(vars map[Var]bool) error
 }
+
+// Env is an environment that maps variable name to values
+type Env map[Var]float64
+
+// 5 concrete types that represent particular kinds of expression: Var, literal, unary, binary, call
+
+// We'll also need each kind of expresion to define an Eval method that returns the expression's value in a given environment.
+// (Since every expression must provide Eval, we add it to the Expr interface)
 
 // A Var represents a reference to a variable
 type Var string
 
+// Eval is an environment that maps variable name to values
 func (v Var) Eval(env Env) float64 {
 	return env[v]
 }
@@ -26,7 +36,7 @@ func (v Var) Check(vars map[Var]bool) error {
 	return nil
 }
 
-// floating-point constant
+// A literal is a floating-point constant
 type literal float64
 
 func (l literal) Eval(_ Env) float64 {
@@ -36,7 +46,7 @@ func (literal) Check(vars map[Var]bool) error {
 	return nil
 }
 
-// represents a unary operator expression, e.g., -x
+// A unary represents a unary operator expression, e.g., -x
 type unary struct {
 	op rune // one of '+', '-'
 	x  Expr
@@ -58,7 +68,7 @@ func (u unary) Check(vars map[Var]bool) error {
 	return u.x.Check(vars)
 }
 
-// represents a binary operator expression, e.g., x+y
+// A binary represents a binary operator expression, e.g., x+y
 type binary struct {
 	op   rune // one of '+', '-', '*', '/'
 	x, y Expr
@@ -87,6 +97,7 @@ func (b binary) Check(vars map[Var]bool) error {
 	return b.y.Check(vars)
 }
 
+// A call represents a function call expression, e.g., sin(x)
 type call struct {
 	fn   string // one of "pow", "sin", "sqrt"
 	args []Expr
@@ -103,6 +114,9 @@ func (c call) Eval(env Env) float64 {
 	}
 	panic(fmt.Sprintf("unsupported unary operator: %q", c.fn))
 }
+
+var numParams = map[string]int{"pow": 2, "sin": 1, "sqrt": 1}
+
 func (c call) Check(vars map[Var]bool) error {
 	arity, ok := numParams[c.fn]
 	if !ok {
@@ -118,8 +132,3 @@ func (c call) Check(vars map[Var]bool) error {
 	}
 	return nil
 }
-
-var numParams = map[string]int{"pow": 2, "sin": 1, "sqrt": 1}
-
-// an environment maps variable to values
-type Env map[Var]float64
