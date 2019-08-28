@@ -1,4 +1,3 @@
-// The `du1` command computes the disk usage of the files in a directory
 package main
 
 import (
@@ -13,13 +12,14 @@ import (
 
 var verbose = flag.Bool("v", false, "show verbose progress messages")
 
-// a counting semaphore for limiting concurrency in dirents
 var sema = make(chan struct{}, 200)
 
+// create a cancellation channel on which on values are ever sent, but whose closure indicates that it's time for the program to stop what it's doing
+// done 关闭后 <-done 的 case 条件满足
 var done = make(chan struct{})
 
 func main() {
-	// cancel traversal when input is detect
+	// Cancel traversal when input is detect.
 	go func() {
 		os.Stdin.Read(make([]byte, 1)) // read a single byte
 		close(done)
@@ -33,6 +33,7 @@ func main() {
 
 	fileSizes := make(chan int64)
 	var n sync.WaitGroup
+	// It might be profitable to poll the cancellation status again within walkDir's loop, to avoid creating goroutines after teh cancellation event.
 	for _, root := range roots {
 		n.Add(1)
 		go walkDir(root, &n, fileSizes)
@@ -51,10 +52,10 @@ func main() {
 loop:
 	for {
 		select {
+		// Before this case returns, it must first drain the fileSizes channel, discarding all values until the channel is closed.
+		// It does this to ensure any active calls to walkDir (goroutine) can run to completion without getting getting stuck sending to fileSizes.
 		case <-done:
-			// drain filesizes to allow existing goroutines to finish (阻塞的数据不再写入)
-			// drain the fileSizes channel, discarding all values until the channel is closed, before returns
-			// does this to ensure any active calls to `walkDir` can run to completion without getting getting stuck sending to filesSizes
+			// drain filesizes to allow existing goroutines to finish
 			for range fileSizes {
 				// Do nothing
 			}
@@ -78,11 +79,10 @@ func printDiskUsage(nfiles, nbytes int64) {
 	fmt.Printf("%d files %.1f GB\n", nfiles, float64(nbytes)/1e9)
 }
 
-// recursively walks the file tree rooted at `dir` and sends the size of each found file on fileSizes
 func walkDir(dir string, n *sync.WaitGroup, fileSizes chan<- int64) {
 	defer n.Done()
 
-	// turns all goroutines created after cancellation into on-ops
+	// This turns all goroutines created after cancellation into on-ops
 	if cancelled() {
 		return
 	}
@@ -98,7 +98,8 @@ func walkDir(dir string, n *sync.WaitGroup, fileSizes chan<- int64) {
 	}
 }
 
-// returns the entries of directory dir
+// A little [ ] profiling of this program revealed that the bottleneck was the acquisition of a semaphore token in dirents.
+// The select below make this operation cancellable and reduces the typical cancellation latency of the program from hundreds of milliseconds to tens
 func dirents(dir string) []os.FileInfo {
 	select {
 	case sema <- struct{}{}: // acquire token
@@ -107,7 +108,6 @@ func dirents(dir string) []os.FileInfo {
 	}
 	defer func() { <-sema }() // release token
 
-	// `ReadDir` returns the same information that a call to `os.Stat` returns for a single file
 	entries, err := ioutil.ReadDir(dir)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "du1: %v\n", err)

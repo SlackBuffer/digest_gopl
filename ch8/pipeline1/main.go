@@ -29,3 +29,8 @@ func main() {
 		fmt.Println(<-squares)
 	}
 }
+
+// We've intentionally chosen very simple functions, though of course they are
+// too computationally trivial to warrent their own goroutines in a realistic program.
+// Pipelines like this may be found in long-running server programs where channels
+// are used for lifelong communication between goroutines containing infinite loops.

@@ -16,7 +16,7 @@ func main() {
 	fmt.Println("Commencing countdown. Press return to abort.")
 
 	select {
-	// `time.After` immediately returns a channel, and starts a new goroutine that sends a single value on that channel after the specified time
+	// time.After immediately returns a channel, and starts a new goroutine that sends a single value on that channel after the specified time. This case is then satisfied (can read from that channel)
 	case <-time.After(3 * time.Second):
 		// Do nothing
 	case <-abort:

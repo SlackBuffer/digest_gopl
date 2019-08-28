@@ -1,15 +1,13 @@
 package main
 
 import (
-	"bytes"
 	"fmt"
-	"io"
-	"os"
+	"sync"
 	"time"
 )
 
 func main() {
-	type A struct {
+	/* type A struct {
 		name string
 	}
 	a := A{name: "ho"}
@@ -31,7 +29,47 @@ func main() {
 	f, _ := w.(*os.File)        // success: ok, f == os.Stdout
 	fmt.Println(f == os.Stdout)
 	// type `*os.File` is not same as type `*bytes.Buffer`
-	// b, ok := w.(*bytes.Buffer) // failure: !ok, b == nil
+	// b, ok := w.(*bytes.Buffer) // failure: !ok, b == nil */
+
+	fn := make(chan string)
+	go func(ff chan<- string) {
+		for _, f := range []string{"fn1", "fn2", "fn3"} {
+			ff <- f
+		}
+		close(ff)
+	}(fn)
+
+	fmt.Println(pic(fn))
+
+	// var as chan int
+	// as := make(chan int)
+	// go func() { as <- 2 }()
+	// fmt.Println(<-as)
+
+}
+
+func pic(fn <-chan string) string {
+	str := make(chan string)
+	var wg sync.WaitGroup
+	for f := range fn {
+		wg.Add(1)
+		go func(f string) {
+			defer wg.Done()
+			str <- f
+		}(f)
+	}
+
+	go func() {
+		wg.Wait()
+		fmt.Println("zero")
+		close(str)
+	}()
+
+	var ss string
+	for s := range str {
+		ss += s + "\n"
+	}
+	return ss
 }
 
 type MyError struct {

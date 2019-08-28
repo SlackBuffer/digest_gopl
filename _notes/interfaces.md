@@ -588,7 +588,8 @@
             out.Write([]byte("done\n"))
         }
     }
-    // *bytes.Buffer（结构体） 的零值传入 f, f 是动态类型为 *byte.Buffer 的 interface value，此时 out != nil
+    // *bytes.Buffer（结构体）的零值（值是 nil，类型是 *bytes.Buffer）传入 f, out 是动态类型为 *byte.Buffer 的 interface value，此时 out != nil
+        // The zero value for a pointer of any type is nil
     // 动态类型和动态值都为 nil 的 interface value 和 nil 作相等比较是 true
     // io.Writer 是接口类型，它的零值的 type 和 value 都为 nil，和 nil 作相等比较是 true
     ```
@@ -935,7 +936,7 @@
         if sw, ok := w.(stringWriter); of {
             return sw.WriteString(s) // avoid a copy
         }
-        return s.Write([]byte(s)) // allocate temporary copy
+        return w.Write([]byte(s)) // allocate temporary copy
     }
     func writeHeader(w io.Writer, contentType string) error {
         if _, err := writeString(w, "Content-Type: "); err != nil {

@@ -16,8 +16,8 @@ func main() {
 	}
 
 	for {
-		// the listener's `Accept` method blocks until an incoming connection request request is made,
-		// then returns a `net.Conn` representing the connection
+		// The listener's `Accept` method blocks until an incoming connection request request is made,
+		// then returns a `net.Conn` representing the connection.
 		conn, err := listener.Accept()
 		if err != nil {
 			log.Print(err) // e.g., connection aborted
@@ -30,10 +30,10 @@ func main() {
 // handles one complete client connection
 func handleConn(c net.Conn) {
 	defer c.Close()
-	// the loop ends when the write fails, at which point
+	// The loop ends when the write fails (most likely because the client has disconnected), at which point
 	// `handleConn` closes its side of the connection using
 	// a deferred call to `Close` and goes back to waiting
-	// for another request
+	// for another request.
 	for {
 		_, err := io.WriteString(c, time.Now().Format("15:04:05\n"))
 		if err != nil {
@@ -44,7 +44,7 @@ func handleConn(c net.Conn) {
 }
 
 // go run main.go
-// "netcat" program
+// "nc", "netcat" program
 // nc localhost 8000
 
 // can also use telnet

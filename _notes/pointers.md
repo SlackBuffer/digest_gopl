@@ -16,7 +16,7 @@
 - Variables are also described as **addressable values**. Expressions that denote variables are the only expressions to which the address-of operator `&` may be applied
 - Pointers in Go are explicitly visible, but there's no pointer arithmetic
 - `&` yields the address of a variable; `*` retrieves the variable that the pointer refers to
-- The zero value for a pointer of any type is `nil`
+- **The zero value for a pointer of any type is `nil`**
 - `p != nil` is true if `p` points to a variable
 - Pointers are comparable. 2 pointer are equal if and only if they point to the same variable or both are `nil`
 - Perfectly safe for a function to return the address of a local variable

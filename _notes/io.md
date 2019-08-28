@@ -1,4 +1,4 @@
-- Send EOF
+- Send **EOF**
     - Unix: `ctrl+d`
     - Windows: `ctrl+z`
 - `strings.NewReader`

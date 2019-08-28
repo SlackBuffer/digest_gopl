@@ -1,13 +1,13 @@
 package main
 
 import (
-	"exercises-the_go_programming_language/ch5/links"
+	"digest_gopl/ch5/links"
 	"fmt"
 	"log"
 	"os"
 )
 
-// `tokens` is a counting semaphore used to enforces a limit of 20  concurrent requests (to avoid too parallel)
+// `tokens` is a counting semaphore used to enforces a limit of 20 concurrent requests (to avoid too parallel)
 var tokens = make(chan struct{}, 20)
 
 func crawl(url string) []string {
@@ -24,7 +24,7 @@ func crawl(url string) []string {
 // break out of the main loop when the worklist is empty and no crawl goroutines are active
 func main() {
 	worklist := make(chan []string)
-	var n int // number of pending sends to `worklist`
+	var n int // keeps track of the number of pending sends to worklist
 	// start with the command-line argument
 	n++
 	go func() { worklist <- os.Args[1:] }()

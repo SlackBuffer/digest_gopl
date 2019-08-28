@@ -245,9 +245,8 @@
     ```
 
 - Functions defined in this way has access to **the entire lexical environment**, so the inner function can refer to variables from the enclosing function
-- Function values can have state (closures)
-- The anonymous inner function can access and update the local variables the local variables of the enclosing function
-- These **hidden variable references** are why we classify functions as **reference types** and why function values are not **comparable**
+- The `ch5/squares` example demonstrates that function values can have state. The anonymous inner function can access and update the local variables of the enclosing function. These **hidden variable references** are why we classify functions as **reference types** and why function values are **not comparable**
+    - Function values like these are implemented using a technique called *closures*
 - When an anonymous function requires recursion, we must first declare a variable, and then assign the anonymous function to that variable. Had these 2 steps been combined in the declaration, the function literal would not be within the scope of the variable (`visitAll`) (`:=` 类型推断) so it would have no way to call itself recursively
 
     ```go

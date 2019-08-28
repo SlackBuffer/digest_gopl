@@ -1,7 +1,7 @@
 <!-- - Add a `&` to the end of of a command to run it in the background -->
 - `lsof -i:8000`
 <!-- - `kill -9 pid` -->
-<!-- - `killall clock1` kills all processes with the given name -->
+- `killall clock1` kills all processes with the given name
 - Alternative to `go get`
 
     ```bash

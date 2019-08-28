@@ -1,4 +1,3 @@
-// The `du1` command computes the disk usage of the files in a directory
 package main
 
 import (
@@ -13,7 +12,7 @@ import (
 
 var verbose = flag.Bool("v", false, "show verbose progress messages")
 
-// a counting semaphore for limiting concurrency in dirents
+// sema is a counting semaphore for limiting concurrency in dirents
 var sema = make(chan struct{}, 40)
 
 func main() {
@@ -61,7 +60,6 @@ func printDiskUsage(nfiles, nbytes int64) {
 	fmt.Printf("%d files %.1f GB\n", nfiles, float64(nbytes)/1e9)
 }
 
-// recursively walks the file tree rooted at `dir` and sends the size of each found file on fileSizes
 func walkDir(dir string, n *sync.WaitGroup, fileSizes chan<- int64) {
 	defer n.Done()
 	for _, entry := range dirents(dir) {
@@ -75,9 +73,7 @@ func walkDir(dir string, n *sync.WaitGroup, fileSizes chan<- int64) {
 	}
 }
 
-// returns the entries of directory dir
 func dirents(dir string) []os.FileInfo {
-	// `ReadDir` returns the same information that a call to `os.Stat` returns for a single file
 	sema <- struct{}{}        // acquire token
 	defer func() { <-sema }() // release token
 	entries, err := ioutil.ReadDir(dir)

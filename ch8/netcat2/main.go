@@ -15,6 +15,7 @@ func main() {
 	}
 	defer conn.Close()
 	go mustCopy(os.Stdout, conn)
+	// 传过去要 echo 的内容
 	mustCopy(conn, os.Stdin)
 }
 

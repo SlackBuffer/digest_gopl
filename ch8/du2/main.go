@@ -1,4 +1,3 @@
-// The `du1` command computes the disk usage of the files in a directory
 package main
 
 import (
@@ -36,12 +35,14 @@ func main() {
 loop:
 	for {
 		select {
+		// Since the program no longer uses a range loop, the first select case must explicitly test whether the fileSizes channel has been closed
 		case size, ok := <-fileSizes:
 			if !ok {
-				break loop // fileSizes has been closed
+				break loop // means fileSizes has been closed
 			}
 			nfiles++
 			nbytes += size
+		// If the -v flag is not specified, the tick channel remains nil, and its case in the select is effectively disabled
 		case <-tick:
 			printDiskUsage(nfiles, nbytes)
 		}
@@ -54,7 +55,6 @@ func printDiskUsage(nfiles, nbytes int64) {
 	fmt.Printf("%d files %.1f GB\n", nfiles, float64(nbytes)/1e9)
 }
 
-// recursively walks the file tree rooted at `dir` and sends the size of each found file on fileSizes
 func walkDir(dir string, fileSizes chan<- int64) {
 	for _, entry := range dirents(dir) {
 		if entry.IsDir() {
@@ -66,9 +66,7 @@ func walkDir(dir string, fileSizes chan<- int64) {
 	}
 }
 
-// returns the entries of directory dir
 func dirents(dir string) []os.FileInfo {
-	// `ReadDir` returns the same information that a call to `os.Stat` returns for a single file
 	entries, err := ioutil.ReadDir(dir)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "du1: %v\n", err)
