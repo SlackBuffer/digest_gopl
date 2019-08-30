@@ -14,6 +14,7 @@
 - Simplify redundant boolean expressions like `x==true` to `x`
 - Functions that merely access or modify internal values of a type, such as the methods of the `Logger` type from `log` package, are called *getter* and *setter*
     - When naming a getter method, we usually **omit** the `Get` prefix. This preference for brevity extends to all methods, not just field accessors, and to other redundant prefixes as well, such as `Fetch`, `Find`, and `Lookup`
+- By convention, the variables guarded by a mutex are declared immediately after the declaration of the mutex itself
 # Good practices
 - `if`, `switch`, `for` statements can include an optional simple statement-a short variable declaration, an increment or assignment statement, or a function call-that can be used to set a value before it is tested
 

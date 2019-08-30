@@ -9,11 +9,15 @@ import (
 	"time"
 )
 
+// It's unlikely to work correctly all the time (there exists data race).
+// We may notice unexpected cache misses, or cache hits that return incorrect values, or even crashes.
+// Worse, it's likely to work correctly some of the time, so we may not even notice that it has a problem (if we don't run it with -race flag).
 func main() {
 	m := New(httpGetBody)
+	// URLs contain duplicates
 	urls := []string{"https://golang.org", "https://godoc.org", "https://play.golang.org", "http://gopl.io", "https://golang.org", "https://godoc.org", "https://play.golang.org", "http://gopl.io"}
 
-	// wait util the last request is complete before returning
+	// Wait util the last request is complete before returning
 	var n sync.WaitGroup
 	for _, url := range urls {
 		n.Add(1)
@@ -28,7 +32,6 @@ func main() {
 		}(url)
 	}
 	n.Wait()
-	// unlikely to work correctly all the time, there exists data race
 
 	/*
 		// executes all calls to `Get` sequentially
@@ -62,3 +65,40 @@ func httpGetBody(url string) (interface{}, error) {
 
 // go run *.go
 // go run -race *.go
+
+// go test -run=TestConcurrent -race -v digest_gopl/ch9/memo1
+
+/*
+WARNING: DATA RACE
+Write at 0x00c0000aec00 by goroutine 32:
+  runtime.mapassign_faststr()
+      /usr/local/Cellar/go/1.12.7/libexec/src/runtime/map_faststr.go:202 +0x0
+  digest_gopl/ch9/memo1.(*Memo).Get()
+      /Users/slackbuffer/go/src/digest_gopl/ch9/memo1/memo.go:30 +0x1ce
+  digest_gopl/ch9/memotest.Concurrent.func1()
+      /Users/slackbuffer/go/src/digest_gopl/ch9/memotest/memotest.go:105 +0xc5
+
+Previous write at 0x00c0000aec00 by goroutine 15:
+  runtime.mapassign_faststr()
+      /usr/local/Cellar/go/1.12.7/libexec/src/runtime/map_faststr.go:202 +0x0
+  digest_gopl/ch9/memo1.(*Memo).Get()
+      /Users/slackbuffer/go/src/digest_gopl/ch9/memo1/memo.go:30 +0x1ce
+  digest_gopl/ch9/memotest.Concurrent.func1()
+      /Users/slackbuffer/go/src/digest_gopl/ch9/memotest/memotest.go:105 +0xc5
+
+Goroutine 32 (running) created at:
+  digest_gopl/ch9/memotest.Concurrent()
+      /Users/slackbuffer/go/src/digest_gopl/ch9/memotest/memotest.go:102 +0x10c
+  digest_gopl/ch9/memo1_test.TestConcurrent()
+      /Users/slackbuffer/go/src/digest_gopl/ch9/memo1/memo_test.go:23 +0xda
+  testing.tRunner()
+      /usr/local/Cellar/go/1.12.7/libexec/src/testing/testing.go:865 +0x163
+
+Goroutine 15 (finished) created at:
+  digest_gopl/ch9/memotest.Concurrent()
+      /Users/slackbuffer/go/src/digest_gopl/ch9/memotest/memotest.go:102 +0x10c
+  digest_gopl/ch9/memo1_test.TestConcurrent()
+      /Users/slackbuffer/go/src/digest_gopl/ch9/memo1/memo_test.go:23 +0xda
+  testing.tRunner()
+	  /usr/local/Cellar/go/1.12.7/libexec/src/testing/testing.go:865 +0x163
+*/

@@ -1,30 +1,30 @@
 package memo
 
-// a request is a message requesting that the `Func` be applied to `key`
+// A request is a message requesting that the Func be applied to key.
 type request struct {
 	key      string
-	response chan<- result
+	response chan<- result // the client want a single result
 }
+
+// The caller of Get communicates with the monitor goroutine through requests.
+type Memo struct{ requests chan request }
 
 type entry struct {
 	res   result
-	ready chan struct{} // closed when `res` is ready
+	ready chan struct{} // closed when res is ready
 }
-
-// the caller of `Get` communicates with the monitor goroutine through `requests`
-type Memo struct{ requests chan request }
 
 // Func is the type of the function to memorize
 type Func func(key string) (interface{}, error)
 
-// result of calling a `Func`
+// result of calling a Func
 // []byte; err
 type result struct {
 	value interface{}
 	err   error
 }
 
-// returns a memorization of `f`; clients must subsequently call `Close`
+// New returns a memorization of f. Clients must subsequently call Close. (否则 server 会无法结束)
 func New(f Func) *Memo {
 	memo := &Memo{requests: make(chan request)}
 	go memo.server(f)
@@ -37,7 +37,7 @@ func (memo *Memo) server(f Func) {
 	for req := range memo.requests {
 		e := cache[req.key]
 		if e == nil {
-			// first request for this key
+			// This is the first request for this key.
 			e = &entry{ready: make(chan struct{})}
 			cache[req.key] = e
 			go e.call(f, req.key)
@@ -46,10 +46,11 @@ func (memo *Memo) server(f Func) {
 	}
 }
 
+// 请求成功后通知 deliver 协程去取
 func (e *entry) call(f Func, key string) {
 	// evaluate the function
 	e.res.value, e.res.err = f(key)
-	// broadcase the ready condition
+	// broadcast the ready condition
 	close(e.ready)
 }
 
@@ -61,6 +62,7 @@ func (e *entry) deliver(response chan<- result) {
 	// fmt.Printf("within deliver: %T\n", response)
 }
 
+// 会有多个 Get 协程
 func (memo *Memo) Get(key string) (interface{}, error) {
 	responseD := make(chan result)
 	// responseD 本身未被转成单向 channel

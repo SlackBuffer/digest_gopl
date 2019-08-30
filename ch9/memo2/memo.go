@@ -2,7 +2,7 @@ package memo
 
 import "sync"
 
-// a memo caches the results of calling a Func
+// Memo caches the results of calling a Func
 type Memo struct {
 	f     Func
 	mu    sync.Mutex
@@ -22,7 +22,7 @@ func New(f Func) *Memo {
 	return &Memo{f: f, cache: make(map[string]result)}
 }
 
-// `key` is url; `memo.f` is `httpGetBody`
+// key is url; memo.f is httpGetBody
 func (memo *Memo) Get(key string) (interface{}, error) {
 	memo.mu.Lock()
 	res, ok := memo.cache[key]

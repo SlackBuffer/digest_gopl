@@ -22,15 +22,15 @@ func New(f Func) *Memo {
 	return &Memo{f: f, cache: make(map[string]result)}
 }
 
-// `key` is url; `memo.f` is `httpGetBody`
+// key is url; memo.f is httpGetBody
 func (memo *Memo) Get(key string) (interface{}, error) {
-	// some URLs may be fetched twice; happens when 2 or more goroutines call `GET` for the same URL at about the same time;
-	// Both consult the cache, find no value, and then call the slow function `f`
 	memo.mu.Lock()
 	res, ok := memo.cache[key]
 	memo.mu.Unlock()
 	if !ok {
 		res.value, res.err = memo.f(key)
+
+		// Between the 2 critical sections, several goroutines may race to compute f(key) and update the map
 		memo.mu.Lock()
 		memo.cache[key] = res
 		memo.mu.Unlock()

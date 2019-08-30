@@ -54,7 +54,7 @@
     - [x] methods
     - [x] interfaces
     - [x] goroutine-channel
-    - [ ] concurrency-shared_variables
+    - [x] concurrency-shared_variables
     - [ ] testing
 
 

@@ -103,7 +103,7 @@
     - The `go` tool sorts `.go` files by name before invoking the compiler
 - One package is initialized at a time, in the order of imports in the program, dependencies first
     - So a package `p` importing `q` can be sure that `q` is fully initialized before `p`'s initialization begins
-- Initialization proceeds from the bottom up; the `main` package is the last to be initialized
+- **Initialization proceeds from the bottom up; the `main` package is the last to be initialized**
 ## Internal packages
 - The `go build` tools treats a package specially if its import path contains a path segment named `internal`. Such packages are called internal packages
 - An internal package may be imported only by another package that is inside the tree rooted at the parent of the `internal` package
