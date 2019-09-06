@@ -6,6 +6,7 @@ import (
 	"net/smtp"
 )
 
+// move the email logic into its own function and store that function in an unexported package-level variable
 var notifyUser = func(username, msg string) {
 	auth := smtp.PlainAuth("", sender, password, hostname)
 	err := smtp.SendMail(hostname+":587", auth, sender, []string{username}, []byte(msg))

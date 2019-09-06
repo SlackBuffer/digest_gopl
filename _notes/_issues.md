@@ -20,3 +20,7 @@
 - [ ] `^`: bitwise XOR (bitwise exclusive OR); `&^`: bit clear (AND NOT)
 - [x] Print �: `fmt.Println(string(1234567))`
 - [ ] object files (`.a`?)
+- buffer
+    - https://stackoverflow.com/questions/47186741/how-to-get-the-json-from-the-body-of-a-request-on-go/47295689#47295689
+    - https://medium.com/@xoen/golang-read-from-an-io-readwriter-without-loosing-its-content-2c6911805361
+    - https://github.com/gin-gonic/gin/issues/1295#issuecomment-402254995

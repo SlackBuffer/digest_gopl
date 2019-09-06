@@ -16,6 +16,7 @@ const hostname = "smtp.example.com"
 const template = `Warning: you are using %d bytes of storage,
 %d%% of your quota.`
 
+// we'd like to test it, but we don't want the test to send out real email
 func CheckQuota(username string) {
 	used := bytesInUse(username)
 	const quota = 1000000000 // 1GB

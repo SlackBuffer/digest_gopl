@@ -3,6 +3,7 @@ package word
 import "testing"
 
 func TestPalindrome(t *testing.T) {
+	// table-driven testing
 	var tests = []struct {
 		input string
 		want  bool

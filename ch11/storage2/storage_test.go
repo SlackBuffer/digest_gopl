@@ -6,7 +6,8 @@ import (
 )
 
 func TestCheckQuotaNotifiesUser(t *testing.T) {
-	// Save and restore original notifyUser
+	// Save and restore original notifyUser.
+	// Do this on all execution paths.
 	saved := notifyUser
 	defer func() { notifyUser = saved }()
 

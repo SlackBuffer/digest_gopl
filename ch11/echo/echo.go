@@ -16,6 +16,7 @@ var (
 
 var out io.Writer = os.Stdout // modified during testing
 
+// parses and reads the flag and reports any errors returned by echo
 func main() {
 	flag.Parse()
 	if err := echo(!*n, *s, flag.Args()); err != nil {
