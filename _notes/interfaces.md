@@ -394,7 +394,7 @@
 
     - The order in which the methods appear doesn't matter. All that matters is the set of methods
 # Interface satisfaction
-- A type *satisfies* an interface** if it **possesses all the methods** the interface requires
+- A type *satisfies* an interface if it **possesses all the methods** the interface requires
     - `*os.File` satisfies `io.Reader`, `Writer`, `Closer`, `ReadWriter`
     - `*bytes.Buffer` satisfies `Reader`, `Writer`, `ReadWriter`
     - As a shorthand, Go programmers often say that a concrete type ***"is a"*** particular interface, meaning that it satisfies the interface

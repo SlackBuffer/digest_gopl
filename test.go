@@ -2,6 +2,9 @@ package main
 
 import (
 	"fmt"
+	"io"
+	"os"
+	"reflect"
 	"sync"
 	"time"
 )
@@ -45,6 +48,9 @@ func main() {
 	// as := make(chan int)
 	// go func() { as <- 2 }()
 	// fmt.Println(<-as)
+
+	var w io.Writer = os.Stdout
+	fmt.Println(reflect.TypeOf(w)) // *os.File, not io.Writer
 
 }
 

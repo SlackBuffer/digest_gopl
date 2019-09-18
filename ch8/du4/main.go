@@ -82,7 +82,7 @@ func printDiskUsage(nfiles, nbytes int64) {
 func walkDir(dir string, n *sync.WaitGroup, fileSizes chan<- int64) {
 	defer n.Done()
 
-	// This turns all goroutines created after cancellation into on-ops
+	// This turns all goroutines created after cancellation into no-ops
 	if cancelled() {
 		return
 	}

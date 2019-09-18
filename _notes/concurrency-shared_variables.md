@@ -367,10 +367,10 @@
 - `ch9/memo4`
     - Each map element is a pointer to an `entry` struct. Each `entry` contains the memorized result of a call to the function `f`, as before, but it additionally contains a channel called `ready`. Just after the `entry`'s result has been set, this channel will be closed, to broadcast to any other goroutines that it's now safe for them to read the results from the `entry`
 - `ch9/memo5`
-    - An alternative implemetation in which the map variable is confined to a monitor goroutine to which calleers of `Get` must send a message
+    - An alternative implementation in which the map variable is confined to a monitor goroutine to which callers of `Get` must send a message
     - The `Memo` type consists of a channel, `requests`, through which the caller of `Get` communicates with the monitor goroutine. The element type of the channel is a `request`. Using this structure, the caller of `Get` sends the monitor goroutine both the key, that is, the argument to the memoized function, and another channel, `response`, over which the result should be sent back when it becomes available. This channel will carry only a single value
     - The `Get` method creates a response channel, puts it in the request, sends it to the monitor goroutine then immediately receives from it
-    - The `cache` variable is confined to the monitor goroutine `(*Meno).server`
+    - The `cache` variable is confined to the monitor goroutine `(*Memo).server`
     - In a similar manner to the mutex-based version, the first request for a given key becomes responsible for calling the function `f` on that key, storing the result in the `entry`, and broadcasting the readiness of the `entry` by closing the `ready` channel. A subsequent request for the same key finds the existing `entry` in the map, waits for the result to become ready, and sends the result through the response channel to the channel goroutine that called `Get`
     - The `call` and `deliver` methods must be called in their own goroutines to ensure that the monitor goroutine does not stop processing new requests
 - It's possible to build many concurrent structures using either of the 2 approaches - shared variables and locks, or communicating sequential process - without excessive complexity

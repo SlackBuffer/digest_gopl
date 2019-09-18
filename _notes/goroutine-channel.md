@@ -7,7 +7,7 @@
 - A `select` may have a `default`, which specifies what to do when none of the other communications can proceed immediately (可用于 non-blocking communication)
 - `sync.WaitGroup` 用来控制不确定数目的协程都结束
 - counting semaphore 限制并发数量
-- 关闭一个 nil 的通道，使得（多个） select 里的从该 nil 通道读值 case 可以被执行，起到**广播**（取消）操作的作用
+- 关闭一个 nil 的通道，使得（多个） select 里的从该 nil 通道读值的 case 可以被执行，起到**广播**（取消）操作的作用（`ch8/du4`）
     - 取消单个协程可以往 select 的 case 发送信号（`ch8/countdown3`）
 - nil channel
 

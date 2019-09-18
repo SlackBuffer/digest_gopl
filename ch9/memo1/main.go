@@ -9,18 +9,18 @@ import (
 	"time"
 )
 
-// It's unlikely to work correctly all the time (there exists data race).
-// We may notice unexpected cache misses, or cache hits that return incorrect values, or even crashes.
-// Worse, it's likely to work correctly some of the time, so we may not even notice that it has a problem (if we don't run it with -race flag).
 func main() {
 	m := New(httpGetBody)
 	// URLs contain duplicates
 	urls := []string{"https://golang.org", "https://godoc.org", "https://play.golang.org", "http://gopl.io", "https://golang.org", "https://godoc.org", "https://play.golang.org", "http://gopl.io"}
 
-	// Wait util the last request is complete before returning
 	var n sync.WaitGroup
 	for _, url := range urls {
 		n.Add(1)
+		// It's unlikely to work correctly all the time (there exists data race).
+		// We may notice unexpected cache misses, or cache hits that return incorrect values, or even crashes.
+		// Worse, it's likely to work correctly some of the time, so we may not even notice that it has a problem (if we don't run it with -race flag).
+		// 存在对 cache 多协程的异步读写
 		go func(url string) {
 			start := time.Now()
 			value, err := m.Get(url)
@@ -31,10 +31,11 @@ func main() {
 			n.Done()
 		}(url)
 	}
+	// Uses a sync.WaitGroup to wait util the last request is complete before returning
 	n.Wait()
 
 	/*
-		// executes all calls to `Get` sequentially
+		// executes all calls to Get sequentially
 		for _, url := range urls {
 			start := time.Now()
 			value, err := m.Get(url)

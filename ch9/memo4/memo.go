@@ -10,7 +10,7 @@ type entry struct {
 // a memo caches the results of calling a Func
 type Memo struct {
 	f     Func
-	mu    sync.Mutex
+	mu    sync.Mutex // in bytes.Buffer, the initial value of the struct is a ready-to-use empty buffer; the zero value of `sync.Mutex` is a ready-to-use unlocked mutex
 	cache map[string]*entry
 }
 
@@ -34,6 +34,7 @@ func (memo *Memo) Get(key string) (interface{}, error) {
 	if e == nil {
 		// This is the first request for this key.
 		// This goroutine becomes responsible for computing the value and broadcasting the ready condition.
+		// 将 e 置为非 nil，做到 duplicate suppression；但此时还不能读取值，需等广播
 		e = &entry{ready: make(chan struct{})}
 		memo.cache[key] = e
 

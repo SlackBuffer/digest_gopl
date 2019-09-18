@@ -4,22 +4,24 @@
 package memo_test
 
 import (
+	memo "digest_gopl/ch9/memo5"
 	"testing"
 
-	"exercises-the_go_programming_language/ch9/memo5"
-	"exercises-the_go_programming_language/ch9/memotest"
+	"digest_gopl/ch9/memotest"
 )
 
 var httpGetBody = memotest.HTTPGetBody
 
 func Test(t *testing.T) {
 	m := memo.New(httpGetBody)
+	defer m.Close()
 	memotest.Sequential(t, m)
 }
 
 // NOTE: not concurrency-safe!  Test fails.
 func TestConcurrent(t *testing.T) {
 	m := memo.New(httpGetBody)
+	defer m.Close()
 	memotest.Concurrent(t, m)
 }
 
