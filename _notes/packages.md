@@ -133,6 +133,6 @@
     # prints the transitive dependencies of the `strconv` standard library
     go list -f '{{join .Deps " "}}' strconv
 
-    # print the direct imports of each package in teh `compress` subtree of the standard library
+    # print the direct imports of each package in the `compress` subtree of the standard library
     go list -f '{{.ImportPath}} -> {{join .Imports " "}}' compress/...
     ```

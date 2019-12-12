@@ -7,7 +7,7 @@
    2. The length is the number of slice elements; can't exceed the capacity (`len`)
    3. Usually is the number of elements between the start of the slice and the **end** of the underlying array (`cap`)
 - Multiple slices can share the same underlying array and may refer to overlapping parts of that array
-- The *slice* operator`s[i:j]`, where `0<=i<=j<=cap(s)`, creates **a new slice** that refers to elements through `j-1` of the sequence of `s`
+- The *slice* operator `s[i:j]`, where `0<=i<=j<=cap(s)`, creates **a new slice** that refers to elements through `j-1` of the sequence of `s`
     - `s` may be an array variable, a pointer to an array, or another slice
     - If `i` is omitted, it's 0; if `j` is omitted, it's `len(s)`
     - Slicing beyond `cap(s)` causes a panic

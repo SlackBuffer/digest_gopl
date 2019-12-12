@@ -18,6 +18,7 @@
 - The `go test` tool scans the `*_test.go` files for these special functions, generates a **temporary** `main` package that calls them all in the proper way, builds and runs it, reports the results, and then clean up
 - `go test -v exercises-the_go_programming_language/ch7/eval`
     - `-v` flag lets us see the printed output of the test, which is normally suppressed for a successful test
+    - `go test -v -run=TestFuncName .`
 ## `Test` functions
 - Each test file must import the `testing` package. Test functions have the following signature
 	

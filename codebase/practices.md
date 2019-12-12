@@ -38,7 +38,7 @@ func WaitForServer(url string) error {
         if err == nil {
             return nil // success
         }
-        log.Printf("server not resonding (%s); retrying...", err)
+        log.Printf("server not responding (%s); retrying...", err)
         time.Sleep(time.Second << uint(tries))
     }
     return fmt.Errorf("server %s failed to respond after %s", url, timeout)

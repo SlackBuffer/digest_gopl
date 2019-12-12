@@ -52,6 +52,14 @@ func main() {
 	var w io.Writer = os.Stdout
 	fmt.Println(reflect.TypeOf(w)) // *os.File, not io.Writer
 
+	v := reflect.ValueOf(3)
+
+	fmt.Println(v)
+	fmt.Println(v.String()) // <int Value>
+	// <int Value>
+	fmt.Println(reflect.ValueOf("qwr")) // qwr
+	t := v.Type()
+	fmt.Println(t) // int
 }
 
 func pic(fn <-chan string) string {
