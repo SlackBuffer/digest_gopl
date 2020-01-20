@@ -23,7 +23,7 @@
 - Each test file must import the `testing` package. Test functions have the following signature
 	
     ```go
-    func TestName(t *test.T) { /* ... */ }
+    func TestName(t *testing.T) { /* ... */ }
     ```
 
 - Test function names must begin with `Test`; the optional suffix `Name` must begin with a **capital letter**
@@ -48,7 +48,7 @@
     1. Write an alternative implementation of the function that uses a less efficient but simpler and clearer algorithm, and check that both implementations give the same result
     2. Create input values according to a pattern so that we know what output to expect (`ch11/rand_test`)
 - Since randomized tests are nondeterministic, it's critical that the log of the failing test record sufficient information to reproduce the failure
-    - For functions that accept complex inputs, it may be simpler toe **log the seed** of the pseudo-random number generator than to dump the entire input data structure. Armed with the seed value, we can easily modify the test to replay the failure deterministically
+    - For functions that accept complex inputs, it may be simpler to **log the seed** of the pseudo-random number generator than to dump the entire input data structure. Armed with the seed value, we can easily modify the test to replay the failure deterministically
     - By using the current time as a source of randomness, the test will explore novel inputs each time it's run, over the entire course of its lifetime. This is especially valuable if your project uses an automated system to run all its tests periodically
 ### Testing a command
 - A package named `main` ordinarily produces an executable program, but it can be imported as a library too
@@ -67,7 +67,7 @@
     - For example, a white-box test can check that the invariants of the package's data types are maintained after every operation
     - White-box tests can provide more detailed coverage of the trickier parts of the implementation
     - `TestEcho` calls `echo` and updates the global variable `out`, both of which are unexported, making it a white-box test
-- While developing `TestEcho`, we modified the `echo` function to use the pacakge level variable `out` when writing its output, so that the test could replace the standard output with al alternative implementation that records the data for later inspection. Using the same technique, we can replace other parts of the production code with easy-to-test "fake" implementations      
+- While developing `TestEcho`, we modified the `echo` function to use the package level variable `out` when writing its output, so that the test could replace the standard output with an alternative implementation that records the data for later inspection. Using the same technique, we can replace other parts of the production code with easy-to-test **"fake"** implementations      
     - The advantage of fake implementations is that they can be simpler to configure, more predictable, more reliable, and easier to observe. They also avoid undesirable side effects such as updating a production database or changing a credit card
     - `ch11/storage1`
 - `ch11/storage2`

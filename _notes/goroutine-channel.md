@@ -485,7 +485,7 @@
         - Since the channel type is not important, we'll use the `struct{}`, which has zero size
     - It's good practice to keep the semaphore operations as close as possible to the I/O operation they regulate
     - This program terminates
-- `ch8/crawl3`: this version uses teh original that has no counting semaphore, but calls it from one of 20 long-lived crawler goroutines, thus ensuring that at most 20 HTTP requests are active concurrently
+- `ch8/crawl3`: this version uses the original that has no counting semaphore, but calls it from one of 20 long-lived crawler goroutines, thus ensuring that at most 20 HTTP requests are active concurrently
     - Program never terminates (problem of termination is not addressed)
 ## Multiplexing with `select`
 - `select` statement *multiplex* operations
