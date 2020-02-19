@@ -43,7 +43,7 @@
             - The `"foo/"` prefix is stripped so that you can add `DIR/bin` to your `PATH` to get at the installed commands
         - If the `GOBIN` environment variable is set, commands are installed to the directory it names instead of `DIR/bin`
             - `GOBIN` must be an **absolute path**
-- `GOROOT` specifies the root directory of the Go distribution, which provides all the p**ackages of the standard library**
+- `GOROOT` specifies the root directory of the Go distribution, which provides all the **packages of the standard library**
     - The directory structure beneath `GOROOT` resembles that of `GOPATH`
         - The source files of the `fmt` package reside in the `$GOROOT/src/fmt` directory
     - Users never need to set `GOROOT` since, by default, the `go` tool will use the location where its was installed

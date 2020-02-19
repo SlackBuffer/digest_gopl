@@ -35,11 +35,11 @@
 
     - We could add more cases (`[]float64`, `map[string][]string`), but the number of types is infinite.
     - For named types, like `url.Values`, even if the type switch had a case for its underlying type `map[string][]string`, it wouldn’t match `url.Values` because the two types are not identical, and the type switch cannot include a case for each type like `url.Values` because that would require this library to depend upon its clients.
-- Without a way to **inspect the representation of values of unknown types**, we quickly get stuck. What we need is reflection.
+- Without **a way to inspect the representation of values of unknown types**, we quickly get stuck. What we need is reflection.
 # `reflect.Type`, `reflect.Value`
 - `reflect` package defines 2 important types, `Type` and `Value`.
-- A `Type` represents a Go type. It is an ***interface*** with many methods for **discriminating** among types and **inspecting** their components, like the fields of a struct or the parameters of a function.
-- The sole implementation of `reflect.Type` is the *type descriptor* (a set of **values that provide information about each type**, such as its name and methods; it's the same entity that identifies the dynamic type of an interface value).
+- A `Type` represents a Go type. It is an ***interface*** with many methods for **discriminating among types and inspecting their components**, like the fields of a struct or the parameters of a function.
+- The sole implementation of `reflect.Type` is the *type descriptor* (a set of values that provide information about each type, such as its name and methods; it's the same entity that identifies the dynamic type of an interface value).
 - `reflect.TypeOf` accepts any `interface{}` and returns its **dynamic type** as a `reflect.Type`.
 
     ```go
@@ -52,7 +52,7 @@
 
     - The `TypeOf(3)` call above assigns the value `3` to the `interface{}` parameter. 
         - An assignment from a concrete value to an interface type performs an **implicit interface conversion**, which creates an **interface value** consisting of two components: its dynamic type is the operand’s type (`int`) and its dynamic value is the operand’s value (`3`).
-    - Note that `reflect.Type` satisfies `fmt.Stringer`. Because printing the dynamic type of an interface value is useful for debugging and logging, `fmt.Printf` provides a **shorthand**, `%T`, that uses `reflect.TypeOf` internally.
+    - `reflect.Type` satisfies `fmt.Stringer`. Because printing the dynamic type of an interface value is useful for debugging and logging, `fmt.Printf` provides a **shorthand**, `%T`, that uses `reflect.TypeOf` internally.
     	
         ```go
         fmt.Printf("%T\n", 3)
@@ -68,29 +68,29 @@
 
     - [ ] See later that `reflect.Type` is capable of representing interface types too
 - A `reflect.Value` can hold a value of any type.
-    - `reflect.Value` is a **struct**.
+    - `reflect.Value` underneath is a **struct**.
 - The `reflect.ValueOf` function accepts any **`interface{}`** and returns a `reflect.Value` containing the interface’s **dynamic value**. As with `reflect.TypeOf`, the results of `reflect.ValueOf` are always **concrete**, but a `reflect.Value` **can hold interface values** too.
 
     ```go
     v := reflect.ValueOf(3)
     fmt.Println(v)			// 3
-    
     fmt.Printf("%v\n", v)	// 3
     
     fmt.Println(v.String())                         // <int Value>
     fmt.Println(reflect.ValueOf("qwr").String())    // qwr
 
+
     t := v.Type()           // a reflect.Type
 	fmt.Println(t.String()) // int
     ```
 
-    - `reflect.Value` also satisfies `fmt.Stringer`, but unless the `Value` holds a **string** , the result of the `String` method reveals only the type. 
-        - Instead, use the `fmt` package’s **`%v`** verb, which treats `reflect.Values` specially.
+    - `reflect.Value` also satisfies `fmt.Stringer`, but unless the `Value` holds a **string** , the result of the `String` method reveals only the type. Instead, use the `fmt` package’s **`%v`** verb, which treats `reflect.Values` specially.
     - Calling the `Type` method on a `Value` returns its type as a `reflect.Type`.
 - The **inverse** operation to `reflect.ValueOf` is the `reflect.Value.Interface` method. It returns an `interface{}` holding the same concrete value as the `reflect.Value`.
 
     ```go
     v := reflect.ValueOf(3) // a reflect.Value
+    
     x := v.Interface()      // an interface{}
     i := x.(int)            // an int
     fmt.Printf("%d\n", i)   // 3
@@ -108,7 +108,7 @@
         - Interface types;
         - `Invalid`, meaning no value at all. (The zero value of a `reflect.Value` has kind `Invalid`.)
     - `formatAtom` treats each value as an **indivisible** thing **with no internal structure**.
-    - Since `Kind` is concerned only with the underlying representation, `format.Any` works for named types too.
+    - Since **`Kind` is concerned only with the underlying representation**, `format.Any` works for named types too.
 # `Display`, a recursive value printer
 - A debugging utility function `Display`: given an arbitrary complex value `x`, prints the complete structure of that value, labeling each element with the path by which it was found.
 - Avoid exposing reflection in the API of a package where possible.
