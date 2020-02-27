@@ -1,6 +1,9 @@
 http://go-database-sql.org/overview.html  
-https://godoc.org/github.com/lib/pq
+https://www.alexedwards.net/blog/practical-persistence-sql (practical one)  
+https://www.alexedwards.net/blog/organising-database-access（全局变量；依赖注入；接口；[ ] context）
 https://www.postgresqltutorial.com/postgresql-serial/  
+
+https://cloud.tencent.com/developer/article/1066988
 # Setup
 
 ```

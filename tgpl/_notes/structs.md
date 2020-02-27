@@ -1,3 +1,6 @@
+- Retrieve struct fields
+    - Marshal and unmarshal into a `map[string]interface{}` and get all map (sorted) keys
+    - Reflection
 # Structs
 - A struct is an aggregate data type that groups together zero or more **named values** of arbitrary types as a single entity. Each value is called a *field*
 - All of these fields are collected into a single entity that can be copied as a unit, passed to functions and returned by them, stored in arrays, and so on

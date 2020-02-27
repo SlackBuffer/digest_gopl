@@ -1,3 +1,5 @@
+- [ ] three-index form https://go101.org/article/container.html#subslice
+
 # Slices
 - Slices represent variable-length sequences whose elements all have the same type
 - A slice type is written `[]T`, where the elements have type `T`; looks like an array without a size
