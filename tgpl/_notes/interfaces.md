@@ -1,3 +1,12 @@
+- [ ] 指定 `interface{}` 参数的方法，可以传入指针作为参数吗
+    - 传入后 panic 了
+- 结构体的字段实现了某个接口，该结构体也即实现该接口。（看 `sort.Reverse` 实现）
+    - 结构体字段是接口类型，实现该接口的其它类型都可以作为结构体字段的值。
+    - 结构体的 `s` 的**匿名**字段 `f` 实现了某接口 `I`，由于 `f` 的方法被 promoted 到 `s`，意味着 `s` 可以调用到 `f` 接口规定的方法。所以 `s` 可以作为接收接口类型 `I` 的方法的参数或者返回接口 `I` 的方法的返回值，因为 `s` 通过 struct embedding mechanism 可以履行 `I` 所规定的的 contract，即意味着 `s` 也实现了接口 `I`。
+    - 该结构体不需要是单字段，字段类型也不必是接口类型，按照接口的 contract 调用时会根据实际的 receiver 和 argument 调用到特定字段的方法。
+    - An *anonymous field* has a type but **no name**. The type of the field must be a **named type** or a **pointer to a named type** (`error` is a predefined named type; `sort.Interface` is a named interface type)
+    - Go's struct embedding mechanism lets us use one **named *struct* type** (only struct type?) as an anonymous field of another struct type, providing a syntactic shortcut so that a simple dot expression like `x.f` can stand for a chain of fields like `x.d.e.f` (**factor out** common parts of different structs). 
+    - The methods of `Point` have been **promoted** to `ColoredPoint`. A `ColoredPoint` is not a `Point`, but it "has a" `Point`, and it has 2 additional methods `Distance` and `ScaleBy` promoted from `Point`.
 # Sum
 - A concrete type specifies the exact representation of its values and exposes the intrinsic operations of that representation. However, when you have a value of an interface, you know nothing about what it is; you know only what it can do, or more precisely, what behaviors are provided by its methods.
 - 传递一个实现了接口定义的方法（“是”某接口）的实体类型作为参数给某个方法，接收该接口类型作为参数的方法（保证）会在自身逻辑内需要调用该接口方法的地方调用到该实体类型对该接口方法的具体实现。目的是实现该接口的实体类型得到统一的处理。如统一需要调用方法 `Foo` 的地方，传入的实体类型参数确实有该方法可被调用，但并不关心方法的具体实现
@@ -302,10 +311,8 @@
 - This design lets you **create new interfaces** that are **satisfied by existing concrete types [x] without changing the existing types**, which is particularly useful for types defined in packages that you don't control
 # Interface as contracts
 - A concrete type specifies the exact representation of its values and exposes the intrinsic operations of that representation, such as arithmetic for numbers, or indexing, `append` and `range` for slices. A concrete type may also provide additional behaviors through its methods. When you have a value of a concrete type, you know exactly what it is and what you can do with it
-- An interface is an abstract type
-    - It doesn't expose the representation or internal structure of its values, or the set of basic operations they support
-    - It reveals only **some of their methods**
-- When you have a value of an interface, you know nothing about what it is; you know only what it can do, or more precisely, what behaviors are provided by its methods
+- An interface is an *abstract type*. It doesn't expose the representation or internal structure of its values, or the set of basic operations they support. It reveals only **some of their methods**
+- When you have a value of an interface, you know nothing about what it is; you know only what it can do, or more precisely, **what behaviors are provided by its methods**
 - `fmt.Fprintf`
 
     ```go
@@ -346,8 +353,8 @@
 - The `io.Writer` interface defines the contract between `Fprintf` and its callers
    1. The contract **requires** that the caller provides a value of a concrete type like `*os.File` or `*bytes.Buffer` that has a method called `Write` with the appropriate signature and behavior
    2. The contract **guarantees** that `Fprintf` will do its job (**invokes `w`'s certain methods**, in this case, `Write`) given any value that satisfies the `io.Writer` interface
-       - `Fprintf` may not assume that it is writing to a file or to memory, only that it can call `Write`
-- Because `fmt.Fprintf` assumes nothing about the representation of the value (of its first argument) and relies only on the behaviors guaranteed by the `io.Writer` contract, we can safely pass a value of any concrete type that satisfies `io.Writer` as the first argument to `fmt.Fprintf`. The freedom to substitute one type for another that satisfies the same interface is called *substitutability*
+       - `Fprintf` may not assume that it is writing to a file or to memory, only that it **can call `Write`**
+- Because `fmt.Fprintf` assumes nothing about the representation of the value (of its first argument) and ***relies only on the behaviors guaranteed by the `io.Writer` contract***, we can safely pass a value of any concrete type that satisfies `io.Writer` as the first argument to `fmt.Fprintf`. The freedom to substitute one type for another that satisfies the same interface is called *substitutability*
 - `fmt.Stringer`
 
     ```go
@@ -491,7 +498,7 @@
 # Interface value
 - Conceptually, a value of an interface type, or *interface value*, has 2 components, a concrete type and a value of that type, called the interface's *dynamic type* and *dynamic value*
     - For statically typed languages, types are a compile-time concept, so a type is not a value
-- In our conceptual model, a set of values called **type descriptors** provide information about each type, such as its name and methods. In an interface value, the type component is represented by the appropriate descriptor
+- In our conceptual model, a set of values called *type descriptors* provide information about each type, such as its name and methods. In an interface value, the type component is represented by the appropriate descriptor
 
     ```go
     var w io.Writer         // 1
@@ -509,7 +516,7 @@
     - Use `w == nil` or `w != nil` to test whether an interface value is nil
     - Calling any method on a nil interface value causes a panic
 - `2` involves an **implicit conversion** from a concrete type to an interface type, and is equivalent to the explicit conversion `io.Writer(os.Stdout)`
-    - A conversion of this kind, whether explicit or implicit, captures the type and the value of its operand
+    - A conversion of this kind, whether explicit or implicit, **captures** the type and the value of its operand
     - The interface (of `io.Writer` type) value's dynamic type is set to the type descriptor for the pointer type `*os.File`, and its dynamic value holds a **copy** of `os.Stdout`, which is a **pointer** to the `os.File` variable representing the standard output of the process
 
         ![](../src/interface2.png)
@@ -647,10 +654,11 @@
 
     // implicitly assigns the argument values to the corresponding parameter variables
     func Reverse(data Interface) Interface { return reverse{data} }
+    // struct value reverse{data} satisfies sort.Interface through struct embedding mechanism. 
     ```
 
     - The `Less` method for `reverse` calls the `Less` method of the ***embedded*** `sort.Interface` value, but with the indices flipped, reversing the order of the sort results
-    - `Len` and `Swap`, the other 2 methods of `reverse`, are implicitly provided by the original `sort.Interface` because it's an embedded field
+    - `Len` and `Swap`, the other 2 methods of `reverse`, are ***implicitly provided*** by the original `sort.Interface` because it's an **embedded** field
     - The exported function `Reverse` returns an instance of the `reverse` type that contains the original `sort.Interface` value
 - `IsSorted` checks whether a sequence is already sorted. It abstracts both the sequence and its ordering function using `sort.Interface`, but it **never calls the `Swap` method**
 - For convenience, the `sort` package provides versions of its functions and types specialized for `[]int`, `[]string`, and `[]float64` using their natural orderings

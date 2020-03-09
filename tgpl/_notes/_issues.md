@@ -1,3 +1,5 @@
+- [ ] graceful shutdown
+- [ ] http handler recover from panic
 - [ ] `go test` 一次通过测试后，再运行测试命令还是得到前一次测试通过的结果，需要重新编辑并保存测试代码才会重新测试
 - [x] go run: cannot run non-main package
 - [x] curl and browser behave differently (Ex1.12.1): additional request '/favicon.ico'
@@ -12,8 +14,7 @@
     var y Foo
     ```
 
-    - Composite types are known as unnamed types, as they use a **type literal** to represent the structural definition of the type, instead of using a simple name identifier
-    - Unnamed composite types use literals for value initialization that are composed of type (itself) and a literal text that represents the value
+    - Composite types are known as unnamed types, as they use a **type literal** to represent the structural definition of the type, instead of using a simple name identifier, Unlike its named counterpart, unnamed composite types use literals for value initialization that are composed of type (itself) and a literal text that represents the value
     - > https://medium.com/learning-the-go-programming-language/types-in-the-go-programming-language-65e945d0a692
     - > https://stackoverflow.com/questions/32983546/named-and-unnamed-types
 - [ ] So a declaration may refer to itself (like functions, types!) or to another that follows it, letting us declare recursive or [ ] mutually recursive types and functions

@@ -1,6 +1,7 @@
 - Retrieve struct fields
     - Marshal and unmarshal into a `map[string]interface{}` and get all map (sorted) keys
     - Reflection
+- The zero value for a struct is composed of the zero values of each of its fields (not nil!)
 # Structs
 - A struct is an aggregate data type that groups together zero or more **named values** of arbitrary types as a single entity. Each value is called a *field*
 - All of these fields are collected into a single entity that can be copied as a unit, passed to functions and returned by them, stored in arrays, and so on
@@ -133,7 +134,7 @@
     w.Circle.Center.X = 1
     ```
 
-- Go's struct embedding mechanism lets us **use one named struct type as an anonymous field of another struct type**, providing a syntactic shortcut so that a simple dot expression like `x.f` can stand for a chain of fields like `x.d.e.f` (**factor out** common parts of different structs)
+- Go's struct embedding mechanism lets us use one **named *struct* type** as an anonymous field of another struct type, providing a syntactic shortcut so that a simple dot expression like `x.f` can stand for a chain of fields like `x.d.e.f` (**factor out** common parts of different structs)
 - An *anonymous field* has a type but **no name**. The type of the field must be a **named type** or a **pointer to a named type**
 
     ```go

@@ -50,8 +50,7 @@
     - Go allows methods to be associated with any type
     - It's often convenient to define additional behaviors for simple types such as numbers, strings, slices, maps, and sometimes even functions
 - Methods may be declared on any named type **defined in the same package**, so long as its underlying type is neither a **pointer** nor an **interface**
-    - [ ] 不能为底层类型是指针或接口的命名类型声明方法
-        - > To **avoid ambiguities**, method declarations are not permitted on named types that are themselves pointer types
+    - To **avoid ambiguities**, method declarations are not permitted on **named types that are *themselves*** pointer types
 - You cannot declare a method with a receiver whose type is defined in another package (which **includes the built-in types** such as `int`)
 - All methods of a given type must have unique names, but different types can use the same name for a method; there's no need to qualify function names (for example, `PathDistance`) to disambiguate
 - The first benefit to using methods over ordinary functions: methods names can be shorter. The benefit is magnified for calling originating outside the package, since they can use the shorter name and omit the package name
@@ -115,7 +114,7 @@
 
 - Functions with a pointer argument must take a pointer; methods with pointer receivers take either a value or a pointer as the receiver when they are called
 - Functions that take a value argument must take a value of that specific type; methods with value receivers take either a value or a pointer as the receiver when they are called
-- Summarize 3 cases (**compiler will perform implicit magic for *receiver***)
+- Summarize 3 cases (compiler will perform implicit magic for receiver)
    1. The receiver argument has the same type as the receiver parameter (both have type `T` or both have type `*T`)
    2. The receiver argument is a variable of type `T` and the receiver parameter has type `*T`
 
@@ -186,17 +185,16 @@
 - In this way, embedding allows complex types with many methods to be built up by the composition of several fields, each providing a few methods
 - Coders familiar with class-based OO languages may be tempted to view `Point` as a base class and `ColoredPoint` as a subclass or derived class, or to interpret the relationship between these types as if a `ColoredPoint` is a `Point`. That would be a mistake
     - `Distance` has parameter of type `Point`, and `q` is not a `Point`, so although `q` does have an embedded field of that type, we must explicitly select it (`q.Point`). Attempting to pass `q` would be error (`p.Distance(q)`)
-- A `ColoredPoint` is not a `Point`, but it "has a" `Point`, and it has 2 additional methods `Distance` and `ScaleBy` promoted from `Point`
-    - If you prefer to think in terms of implementation, the embedded field instructs the complier to generate **additional wrapper methods** that delegate to the declared methods
+- A `ColoredPoint` is not a `Point`, but it "**has** a" `Point`, and it has 2 additional methods `Distance` and `ScaleBy` promoted from `Point`. If you prefer to think in terms of **implementation**, the embedded field instructs the complier to generate **additional wrapper methods** that delegate to the declared methods
 
-        ```go
-        func (p ColoredPoint) Distance(q Point) float64 {
-            return p.Point.Distance(q)
-        }
-        func (p *ColoredPoint) ScaleBy(factor float64) {
-            p.Point.ScaleBy(factor)
-        }
-        ```
+    ```go
+    func (p ColoredPoint) Distance(q Point) float64 {
+        return p.Point.Distance(q)
+    }
+    func (p *ColoredPoint) ScaleBy(factor float64) {
+        p.Point.ScaleBy(factor)
+    }
+    ```
 
 - The type of an anonymous field may be a pointer to a named value, in which case fields and methods are **promoted indirectly** from the pointed-to object
 
@@ -213,7 +211,7 @@
 
     - Adding another level of indirection lets us **share** common structures and vary the relationships between objects **dynamically**
 - A struct may have more than one anonymous filed
-- Methods can be declared only on named types (like `Point`) and pointers to them (`*Point`), but thanks to embedding, it's possible and sometimes useful for unnamed struct types to have methods too
+- * Methods can be declared only on named types (like `Point`) and pointers to them (`*Point`), but thanks to embedding, it's possible and sometimes useful for unnamed struct types to have methods too
 
     ```go
     var (

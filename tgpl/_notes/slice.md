@@ -1,4 +1,5 @@
 - [ ] three-index form https://go101.org/article/container.html#subslice
+- [ ] when slice pass as parameter, is `&` necessary?
 
 # Slices
 - Slices represent variable-length sequences whose elements all have the same type

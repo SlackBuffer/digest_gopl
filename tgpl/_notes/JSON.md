@@ -1,3 +1,4 @@
+- [ ] `json.Unmarshal([]byte, target)`: Why can target be the address of a pointer type?
 # JSON
 - `encoding/json`, `encoding/xml`, `encoding/asn1`
 - The basic JSON types are numbers (in decimal or scientific notation), booleans, and strings, which are sequences of Unicode code points enclosed in double quotes, with backslash escapes using a similar notation to Go, though JSON's `\uhhhh` numeric escapes denote UTF-16 codes, not runes
