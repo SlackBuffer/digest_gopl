@@ -11,23 +11,21 @@ import (
 )
 
 func main() {
+	// 世界
 	counts := make(map[rune]int)
-	// fmt.Println(utf8.UTFMax) // 4
-	var utflen [utf8.UTFMax + 1]int
+	var utflen [utf8.UTFMax + 1]int // utf8.UTFMax == 4; utflen[0] is not used
 	invalid := 0
-
 	in := bufio.NewReader(os.Stdin)
 	for {
-		r, n, err := in.ReadRune()
-		// the only error expected is end-of-file
-		if err == io.EOF {
+		r, n, err := in.ReadRune() // rune, size in byte, error
+		if err == io.EOF {         // the only error expected is end-of-file
 			break
 		}
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "charcount: %v\n", err)
 			os.Exit(1)
 		}
-		// unicode.ReplacementChar's length is 1
+		// If the input was not a legal UTF-8 encoding of a rune, the returned rune is unicode.ReplacementChar and the length is 1.
 		if r == unicode.ReplacementChar && n == 1 {
 			invalid++
 			continue
@@ -35,7 +33,6 @@ func main() {
 		counts[r]++
 		utflen[n]++
 	}
-
 	fmt.Printf("rune\tcount\n")
 	for c, n := range counts {
 		fmt.Printf("%q\t%d\n", c, n)
@@ -50,3 +47,5 @@ func main() {
 		fmt.Printf("\n%d invalid UTF-8 characters\n", invalid)
 	}
 }
+
+// go run main.go < main.go

@@ -36,7 +36,7 @@
 - The style of *table-driven* testing in very common in Go (`ch11/word2`)
 - The output of a failing test does not include the entire stack trace at the moment of the call to `t.Errorf`. Nor does `t.Errorf` cause a panic or stop the execution of the test. Tests are independent of each other. If an early entry in the table causes the test to fail, later table entries will still be checked, and thus we may learn about multiple failures during a single run
 - When we really must stop a test function, perhaps because some initialization code failed or to prevent a failure already reported from causing a confusing cascade of others, use `t.Fatal` or `t.Fatalf`. These must be called from the **same goroutine** as the `Test` function, not from another one created during the test
-- Test failure messages are usually of the form `"f(x) = y, want z`, where `f(x)` explains the attempted operation and its input, `y` is the actual result, and `z` the expected result
+- Test failure messages are usually of the form `"f(x) = y, want z"`, where `f(x)` explains the attempted operation and its input, `y` is the actual result, and `z` the expected result
     - When convenient, use actual Go syntax for the `f(x)` part
     - Displaying `x` is particularly important in a table-driven test, since a given assertion is executed many times with different values
 - Avoid boilerplate and redundant information
@@ -74,7 +74,7 @@
     - This pattern can be used to temporarily save and restore all kinds of global variables, including command-line flags, debugging options, and performance parameters; to install and remove hooks that cause the production code to call some test code when something interesting happens; and to coax the production code into rare but important states, such as timeouts, errors, and even specific interleavings of concurrent activities
     - Using global variables in this way is safe only because `go test` does not normally run multiple tests concurrently
 ### External test packages
-- Consider the package `net/url`, which provides a URL parser, and `net/http`, which provides a web server and HTTP client library. The higher-level `new/http` depends on the lower-level `net/url`. One of the tests in `net/url` is an example demonstrating the interaction between URLs and HTTP client library. In other words, a test of the lower-level package imports the higher-level package
+- Consider the package `net/url`, which provides a URL parser, and `net/http`, which provides a web server and HTTP client library. The higher-level `net/http` depends on the lower-level `net/url`. One of the tests in `net/url` is an example demonstrating the interaction between URLs and HTTP client library. In other words, a test of the lower-level package imports the higher-level package
   - Declaring this test function in the `net/url` package would create a cycle in the package import path. Go specification **forbids** import cycles
     ![](src/cycle.jpg)
 - We resolve the problem by declaring the test function in an *external test package*, that is, in a file in the `net/url` directory whose package declaration reads `package url_test` (would be `package url` normally)
@@ -95,7 +95,7 @@
     - `XTestGoFiles` is the list of files that constitute the external test package, `fmt_test`, so these files must import the `fmt` package on order to use it. They are only included during testing
 - Sometimes an external test package may need privileged access to the internals of the package under test, if for example a white-box test must live in a separate package to avoid an import cycle. In such cases, we use a trick: we add declarations to an in-package `_test.go` file to expose the necessary internals to the external test. This file thus offers the test a back door to the package
     - If the source file exists only for this purpose and contains no tests itself, it's often called `export_test.go`
-- The implementation of the `fmt` package needs the functionality of `unicode.IsSpace` as part of `fmt.Scanf`. To avoid creating an undesirable dependency, `fmt` does not import the `unicode` pacakge and its large tables of data; instead, it contains a simpler implementation, which it calls `isSpace`
+- The implementation of the `fmt` package needs the functionality of `unicode.IsSpace` as part of `fmt.Scanf`. To avoid creating an undesirable dependency, `fmt` does not import the `unicode` package and its large tables of data; instead, it contains a simpler implementation, which it calls `isSpace`
 - To ensure that the behavior of `fmt.isSpace` and `unicode.IsSpace` do not drift apart, `fmt` contains a test. It's an external test, and thus it cannot access `isSpace` directly, so `fmt` opens a back door to it by declaring an exported variable that holds the internal `isSpace` function. This is the entirety of the `fmt` package's `export_test.go` file
 	
     ```go

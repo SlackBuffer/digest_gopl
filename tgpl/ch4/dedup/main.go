@@ -18,7 +18,6 @@ func main() {
 			fmt.Println(line)
 		}
 	}
-
 	if err := input.Err(); err != nil {
 		fmt.Fprintf(os.Stderr, "dedup: %v\n", err)
 		os.Exit(1)
